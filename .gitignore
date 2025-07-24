@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+
+# Sanal Ortam (Conda)
+.conda
+
+# IDE & OS dosyaları
+.vscode/
+.idea/
+*.DS_Store
+
+# Veri ve Modeller
+/data/
+/models/
