@@ -1,53 +1,47 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failure.dart';
+import '../../../../core/error/failures.dart';
 import '../entities/user.dart';
-import '../entities/auth_token.dart';
 
-/// Login request data
-class LoginRequest {
-  final String email;
-  final String password;
+/// Abstract repository interface for authentication operations
+abstract class AuthRepository {
+  /// Login user with email and password
+  Future<Either<Failure, User>> login(String email, String password);
 
-  const LoginRequest({
-    required this.email,
-    required this.password,
+  /// Register new user
+  Future<Either<Failure, User>> register({
+    required String email,
+    required String password,
+    String? firstName,
+    String? lastName,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'email': email,
-      'password': password,
-    };
-  }
-}
+  /// Logout current user
+  Future<Either<Failure, void>> logout();
 
-/// Register request data
-class RegisterRequest {
-  final String email;
-  final String password;
-  final String? firstName;
-  final String? lastName;
+  /// Get current authenticated user
+  Future<Either<Failure, User>> getCurrentUser();
 
-  const RegisterRequest({
-    required this.email,
-    required this.password,
-    this.firstName,
-    this.lastName,
+  /// Refresh authentication token
+  Future<Either<Failure, User>> refreshToken();
+
+  /// Update user profile
+  Future<Either<Failure, User>> updateProfile({
+    String? firstName,
+    String? lastName,
+    String? profileImage,
+    DateTime? dateOfBirth,
+    String? gender,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'email': email,
-      'password': password,
-      if (firstName != null) 'first_name': firstName,
-      if (lastName != null) 'last_name': lastName,
-    };
-  }
-}
+  /// Change user password
+  Future<Either<Failure, void>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  });
 
-/// Authentication result
-class AuthResult {
-  final User user;
+  /// Delete user account
+  Future<Either<Failure, void>> deleteAccount();
+}
   final AuthToken token;
 
   const AuthResult({

@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failure.dart';
+import '../../../../core/error/failures.dart';
 import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
 
@@ -14,12 +14,6 @@ class LoginUseCase {
     required String email,
     required String password,
   }) async {
-    final request = LoginRequest(email: email, password: password);
-    final result = await _repository.login(request);
-    
-    return result.fold(
-      (failure) => Left(failure),
-      (authResult) => Right(authResult.user),
-    );
+    return await _repository.login(email, password);
   }
 }
