@@ -45,8 +45,8 @@ class Container(containers.DeclarativeContainer):
         session_factory=database.provided.session_factory,
     )
     
-    style_quiz_repository = providers.Factory(
-        "app.features.style_quiz.infrastructure.repositories.StyleQuizRepositoryImpl",
+    style_dna_repository = providers.Factory(
+        "app.features.style_quiz.infrastructure.repositories.SqlAlchemyStyleDNARepository",
         session_factory=database.provided.session_factory,
     )
     
@@ -56,7 +56,7 @@ class Container(containers.DeclarativeContainer):
     )
     
     ecommerce_repository = providers.Factory(
-        "app.features.ecommerce.infrastructure.repositories.EcommerceRepositoryImpl",
+        "app.features.ecommerce.infrastructure.repositories.HttpEcommerceRepository",
         http_client=http_client,
     )
     
@@ -100,6 +100,48 @@ class Container(containers.DeclarativeContainer):
     get_clothing_list_usecase = providers.Factory(
         "app.features.wardrobe.application.use_cases.GetClothingListUseCase",
         repository=wardrobe_repository,
+    )
+    
+    # Style Quiz Use Cases
+    submit_quiz_usecase = providers.Factory(
+        "app.features.style_quiz.application.use_cases.SubmitQuizUseCase",
+        repository=style_dna_repository,
+    )
+    
+    get_style_dna_usecase = providers.Factory(
+        "app.features.style_quiz.application.use_cases.GetStyleDNAUseCase",
+        repository=style_dna_repository,
+    )
+    
+    update_style_dna_usecase = providers.Factory(
+        "app.features.style_quiz.application.use_cases.UpdateStyleDNAUseCase",
+        repository=style_dna_repository,
+    )
+    
+    delete_style_dna_usecase = providers.Factory(
+        "app.features.style_quiz.application.use_cases.DeleteStyleDNAUseCase",
+        repository=style_dna_repository,
+    )
+    
+    # AI Service Clients
+    ai_service_client = providers.Factory(
+        "app.features.recommendations.infrastructure.ai_service_client.AIServiceClient",
+        base_url=config.ai_service_url,
+        api_key=config.ai_service_api_key,
+    )
+    
+    # Recommendations Use Cases
+    generate_recommendations_usecase = providers.Factory(
+        "app.features.recommendations.application.use_cases.GenerateRecommendationsUseCase",
+        ai_client=ai_service_client,
+        style_dna_repository=style_dna_repository,
+        wardrobe_repository=wardrobe_repository,
+    )
+    
+    generate_quick_recommendations_usecase = providers.Factory(
+        "app.features.recommendations.application.use_cases.GenerateQuickRecommendationsUseCase",
+        ai_client=ai_service_client,
+        style_dna_repository=style_dna_repository,
     )
 
 

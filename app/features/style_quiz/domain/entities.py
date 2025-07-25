@@ -115,13 +115,44 @@ class StyleDNA:
             "body_type_confidence": quiz_responses.get("body_confidence", 5)
         }
     
-    def update_from_quiz(self, quiz_responses: Dict[str, Any]) -> None:
-        """Update StyleDNA from new quiz responses."""
-        self.quiz_responses = quiz_responses
-        self.style_profile = self._calculate_style_profile(quiz_responses)
-        self.preferred_styles = self._extract_preferred_styles(quiz_responses)
-        self.preferred_colors = self._extract_preferred_colors(quiz_responses)
-        self.lifestyle_factors = self._extract_lifestyle_factors(quiz_responses)
+    def update_from_quiz(self, quiz_responses: Dict[str, Any]) -> "StyleDNA":
+        """Update StyleDNA from new quiz responses and return updated entity."""
+        from datetime import datetime
+        
+        updated_style_dna = StyleDNA(
+            id=self.id,
+            user_id=self.user_id,
+            quiz_responses=quiz_responses,
+            style_profile=self._calculate_style_profile(quiz_responses),
+            preferred_styles=self._extract_preferred_styles(quiz_responses),
+            preferred_colors=self._extract_preferred_colors(quiz_responses),
+            lifestyle_factors=self._extract_lifestyle_factors(quiz_responses),
+            version=self.version,
+            created_at=self.created_at,
+            updated_at=datetime.utcnow()
+        )
+        
+        return updated_style_dna
+    
+    def update_profile(self, updates: Dict[str, Any]) -> "StyleDNA":
+        """Update specific profile fields and return updated entity."""
+        from datetime import datetime
+        
+        # Create updated entity with selective updates
+        updated_style_dna = StyleDNA(
+            id=self.id,
+            user_id=self.user_id,
+            quiz_responses=self.quiz_responses,
+            style_profile=self.style_profile,
+            preferred_styles=updates.get("preferred_styles", self.preferred_styles),
+            preferred_colors=updates.get("preferred_colors", self.preferred_colors),
+            lifestyle_factors=updates.get("lifestyle_factors", self.lifestyle_factors),
+            version=self.version,
+            created_at=self.created_at,
+            updated_at=datetime.utcnow()
+        )
+        
+        return updated_style_dna
     
     def get_style_recommendations(self) -> Dict[str, Any]:
         """Get style recommendations based on the profile."""

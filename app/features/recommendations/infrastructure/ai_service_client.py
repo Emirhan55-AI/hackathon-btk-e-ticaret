@@ -1,147 +1,212 @@
 import httpx
+import json
 import uuid
 from datetime import datetime
-from typing import List, Dict, Any
-from app.features.recommendations.domain.services import AIRecommendationService
-from app.features.recommendations.application.schemas import (
-    OutfitRecommendation, StyleDNAProfile, OutfitItem
-)
-from app.core.config import settings
+from typing import List, Dict, Any, Optional
 import logging
 
-logger = logging.getLogger("app.features.recommendations.infrastructure.ai_service_client")
+logger = logging.getLogger(__name__)
 
-class AIServiceClient(AIRecommendationService):
-    """Concrete implementation of AI recommendation service."""
+
+class AIServiceClient:
+    """Client for AI recommendation service."""
     
-    def __init__(self):
-        self.base_url = settings.ai_service_url
-        self.api_key = settings.ai_service_api_key
+    def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None):
+        self.base_url = base_url or "https://api.example-ai-service.com"
+        self.api_key = api_key or "demo-api-key"
+        self.timeout = 30.0
     
-    async def generate_outfit_recommendations(
-        self, 
-        style_profile: StyleDNAProfile,
-        occasion: str = None,
-        weather: str = None
-    ) -> List[OutfitRecommendation]:
-        """Generate outfit recommendations based on user's style profile."""
+    async def generate_outfit_recommendations(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate outfit recommendations based on user data."""
         try:
-            async with httpx.AsyncClient() as client:
-                payload = {
-                    "style_profile": style_profile.dict(),
-                    "occasion": occasion,
-                    "weather": weather
-                }
-                
+            logger.info("Generating outfit recommendations via AI service")
+            
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
                 response = await client.post(
-                    f"{self.base_url}/recommendations/outfits",
-                    json=payload,
-                    headers={"Authorization": f"Bearer {self.api_key}"}
+                    f"{self.base_url}/v1/recommendations/outfits",
+                    json=request_data,
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json"
+                    }
                 )
                 
                 if response.status_code == 200:
-                    data = response.json()
-                    return self._parse_outfit_recommendations(data)
+                    return response.json()
                 else:
-                    logger.warning(f"AI service returned {response.status_code}")
-                    return self._fallback_recommendations()
+                    logger.warning(f"AI service returned {response.status_code}: {response.text}")
+                    return self._generate_fallback_recommendations(request_data)
                     
+        except httpx.TimeoutException:
+            logger.warning("AI service request timed out, using fallback")
+            return self._generate_fallback_recommendations(request_data)
         except Exception as e:
             logger.error(f"Error calling AI service: {e}")
-            return self._fallback_recommendations()
+            return self._generate_fallback_recommendations(request_data)
     
-    async def analyze_style_preferences(
-        self, 
-        quiz_answers: List[Dict[str, Any]]
-    ) -> StyleDNAProfile:
-        """Analyze quiz answers to create/update style DNA profile."""
+    async def generate_quick_recommendations(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate quick recommendations without full analysis."""
         try:
-            async with httpx.AsyncClient() as client:
-                payload = {"quiz_answers": quiz_answers}
-                
+            logger.info("Generating quick recommendations via AI service")
+            
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
                 response = await client.post(
-                    f"{self.base_url}/analyze/style-dna",
-                    json=payload,
-                    headers={"Authorization": f"Bearer {self.api_key}"}
+                    f"{self.base_url}/v1/recommendations/quick",
+                    json=request_data,
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json"
+                    }
                 )
                 
                 if response.status_code == 200:
-                    data = response.json()
-                    return self._parse_style_dna(data, quiz_answers[0].get("user_id"))
+                    return response.json()
                 else:
-                    logger.warning(f"AI service returned {response.status_code}")
-                    return self._fallback_style_dna(quiz_answers[0].get("user_id"))
+                    logger.warning(f"AI service returned {response.status_code}: {response.text}")
+                    return self._generate_quick_fallback_recommendations(request_data)
+                    
+        except httpx.TimeoutException:
+            logger.warning("AI service request timed out, using fallback")
+            return self._generate_quick_fallback_recommendations(request_data)
+        except Exception as e:
+            logger.error(f"Error calling AI service: {e}")
+            return self._generate_quick_fallback_recommendations(request_data)
+    
+    def _generate_fallback_recommendations(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate fallback recommendations when AI service is unavailable."""
+        logger.info("Generating fallback outfit recommendations")
+        
+        occasion = request_data.get("occasion", "casual")
+        season = request_data.get("season", "spring")
+        preferred_colors = request_data.get("preferred_colors", ["navy", "white", "gray"])
+        preferred_styles = request_data.get("preferred_styles", ["casual", "comfortable"])
+        
+        # Generate basic recommendations based on occasion and season
+        outfits = []
+        
+        if occasion == "work" or occasion == "professional":
+            outfits.append({
+                "name": f"Professional {season.title()} Outfit",
+                "item_ids": [],  # Would be populated with actual items
+                "occasion": occasion,
+                "season": season,
+                "confidence_score": 0.7,
+                "styling_tips": [
+                    "Choose well-fitted pieces for a polished look",
+                    "Stick to neutral colors for versatility",
+                    "Add minimal accessories for sophistication"
+                ]
+            })
+        elif occasion == "casual":
+            outfits.append({
+                "name": f"Casual {season.title()} Look",
+                "item_ids": [],
+                "occasion": occasion,
+                "season": season,
+                "confidence_score": 0.75,
+                "styling_tips": [
+                    "Comfort is key for casual outfits",
+                    "Mix textures for visual interest",
+                    "Add your personal touch with accessories"
+                ]
+            })
+        elif occasion == "formal":
+            outfits.append({
+                "name": f"Formal {season.title()} Ensemble",
+                "item_ids": [],
+                "occasion": occasion,
+                "season": season,
+                "confidence_score": 0.8,
+                "styling_tips": [
+                    "Choose classic silhouettes",
+                    "Pay attention to fit and tailoring",
+                    "Keep accessories elegant and minimal"
+                ]
+            })
+        else:
+            # Generic recommendation
+            outfits.append({
+                "name": f"Stylish {season.title()} Outfit",
+                "item_ids": [],
+                "occasion": occasion or "versatile",
+                "season": season,
+                "confidence_score": 0.65,
+                "styling_tips": [
+                    "Choose pieces that reflect your personal style",
+                    "Consider the weather and comfort",
+                    "Have fun with your outfit choices"
+                ]
+            })
+        
+        return {
+            "outfits": outfits,
+            "status": "fallback",
+            "message": "Generated using fallback recommendations"
+        }
+    
+    def _generate_quick_fallback_recommendations(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate quick fallback recommendations."""
+        logger.info("Generating quick fallback recommendations")
+        
+        occasion = request_data.get("occasion", "casual")
+        weather = request_data.get("weather", "mild")
+        
+        outfits = [{
+            "name": f"Quick {occasion.title()} Suggestion",
+            "item_ids": [],
+            "occasion": occasion,
+            "confidence_score": 0.6,
+            "styling_tips": [
+                f"Perfect for {occasion} occasions",
+                f"Suitable for {weather} weather",
+                "Quick and easy to put together"
+            ]
+        }]
+        
+        return {
+            "outfits": outfits,
+            "status": "quick_fallback",
+            "message": "Generated using quick fallback recommendations"
+        }
+    
+    async def analyze_style_preferences(self, quiz_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze user's style preferences from quiz data."""
+        try:
+            logger.info("Analyzing style preferences via AI service")
+            
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                response = await client.post(
+                    f"{self.base_url}/v1/analysis/style-preferences",
+                    json={"quiz_data": quiz_data},
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json"
+                    }
+                )
+                
+                if response.status_code == 200:
+                    return response.json()
+                else:
+                    logger.warning(f"AI service returned {response.status_code}: {response.text}")
+                    return self._generate_style_analysis_fallback(quiz_data)
                     
         except Exception as e:
             logger.error(f"Error analyzing style preferences: {e}")
-            return self._fallback_style_dna(quiz_answers[0].get("user_id"))
+            return self._generate_style_analysis_fallback(quiz_data)
     
-    def _parse_outfit_recommendations(self, data: Dict[str, Any]) -> List[OutfitRecommendation]:
-        """Parse AI service response into outfit recommendations."""
-        recommendations = []
-        for outfit_data in data.get("outfits", []):
-            items = [
-                OutfitItem(
-                    item_id=uuid.UUID(item["id"]),
-                    name=item["name"],
-                    category=item["category"],
-                    color=item["color"],
-                    confidence_score=item.get("confidence", 0.8)
-                )
-                for item in outfit_data.get("items", [])
-            ]
-            
-            recommendation = OutfitRecommendation(
-                outfit_id=uuid.uuid4(),
-                items=items,
-                style_tags=outfit_data.get("style_tags", []),
-                occasion=outfit_data.get("occasion", "casual"),
-                confidence_score=outfit_data.get("confidence", 0.8),
-                explanation=outfit_data.get("explanation", "AI-generated outfit recommendation")
-            )
-            recommendations.append(recommendation)
-        
-        return recommendations
-    
-    def _parse_style_dna(self, data: Dict[str, Any], user_id: str) -> StyleDNAProfile:
-        """Parse AI service response into style DNA profile."""
-        return StyleDNAProfile(
-            user_id=uuid.UUID(user_id),
-            style_preferences=data.get("style_preferences", {}),
-            color_palette=data.get("color_palette", []),
-            preferred_occasions=data.get("preferred_occasions", []),
-            fit_preferences=data.get("fit_preferences", {}),
-            updated_at=datetime.utcnow()
-        )
-    
-    def _fallback_recommendations(self) -> List[OutfitRecommendation]:
-        """Provide fallback recommendations when AI service is unavailable."""
-        return [
-            OutfitRecommendation(
-                outfit_id=uuid.uuid4(),
-                items=[
-                    OutfitItem(
-                        item_id=uuid.uuid4(),
-                        name="Classic White Shirt",
-                        category="tops",
-                        color="white",
-                        confidence_score=0.7
-                    )
-                ],
-                style_tags=["classic", "versatile"],
-                occasion="casual",
-                confidence_score=0.7,
-                explanation="Fallback recommendation - classic versatile piece"
-            )
-        ]
-    
-    def _fallback_style_dna(self, user_id: str) -> StyleDNAProfile:
-        """Provide fallback style DNA when AI service is unavailable."""
-        return StyleDNAProfile(
-            user_id=uuid.UUID(user_id),
-            style_preferences={"style": "classic", "preference_score": 0.5},
-            color_palette=["black", "white", "navy"],
-            preferred_occasions=["casual", "work"],
-            fit_preferences={"tops": "fitted", "bottoms": "straight"},
-            updated_at=datetime.utcnow()
-        )
+    def _generate_style_analysis_fallback(self, quiz_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Generate fallback style analysis."""
+        return {
+            "style_profile": {
+                "dominant_style": "classic",
+                "confidence": 0.7,
+                "secondary_styles": ["casual", "elegant"]
+            },
+            "preferred_colors": ["navy", "white", "gray", "black"],
+            "lifestyle_factors": {
+                "activity_level": "moderate",
+                "formality_preference": "smart_casual"
+            },
+            "status": "fallback",
+            "message": "Generated using fallback style analysis"
+        }
