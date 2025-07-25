@@ -1,5 +1,6 @@
 """E-commerce API endpoints."""
 from typing import Optional
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.features.ecommerce.infrastructure.repositories import HttpEcommerceRepository
@@ -21,13 +22,20 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/ecommerce", tags=["E-commerce"])
+router = APIRouter(prefix="/ecommerce", tags=["E-commerce"])
 
 
 # Dependency functions
-async def get_ecommerce_repository() -> HttpEcommerceRepository:
+async def get_http_client() -> httpx.AsyncClient:
+    """Get httpx async client."""
+    return httpx.AsyncClient()
+
+
+async def get_ecommerce_repository(
+    http_client: httpx.AsyncClient = Depends(get_http_client)
+) -> HttpEcommerceRepository:
     """Get e-commerce repository instance."""
-    return HttpEcommerceRepository()
+    return HttpEcommerceRepository(http_client)
 
 
 async def get_search_use_case(

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Dict, Any
+from decimal import Decimal
 import httpx
 import logging
 from datetime import datetime
@@ -147,78 +148,112 @@ class HttpEcommerceRepository(EcommerceRepository):
     
     def _json_to_product(self, data: Dict[str, Any]) -> Product:
         """Convert JSON data to Product entity."""
+        from app.features.ecommerce.domain.entities import ProductImage
+        
+        # Create images list
+        images = []
+        
+        # Add primary image from thumbnail
+        thumbnail = data.get("thumbnail", "")
+        if thumbnail:
+            images.append(ProductImage(
+                url=thumbnail,
+                alt_text=data.get("title", "Product image"),
+                is_primary=True
+            ))
+        
+        # Add additional images
+        for img_url in data.get("images", []):
+            if img_url != thumbnail:  # Avoid duplicating the thumbnail
+                images.append(ProductImage(
+                    url=img_url,
+                    alt_text=data.get("title", "Product image"),
+                    is_primary=False
+                ))
+        
+        # Calculate original price if there's a discount
+        price = Decimal(str(data.get("price", 0)))
+        discount_percentage = float(data.get("discountPercentage", 0))
+        original_price = None
+        if discount_percentage > 0:
+            original_price = price / (Decimal('1') - Decimal(str(discount_percentage)) / Decimal('100'))
+        
         return Product(
             id=str(data.get("id", "")),
             name=data.get("title", "Unknown Product"),
             description=data.get("description", ""),
-            price=float(data.get("price", 0)),
+            price=price,
+            original_price=original_price,
             currency="USD",
             category=data.get("category", "general"),
             brand=data.get("brand", "Unknown"),
-            image_url=data.get("thumbnail", ""),
-            additional_images=data.get("images", []),
-            rating=float(data.get("rating", 0)),
-            stock_quantity=data.get("stock", 0),
+            images=images,
             tags=data.get("tags", []),
-            discount_percentage=float(data.get("discountPercentage", 0)),
-            metadata={
-                "sku": data.get("sku", ""),
-                "weight": data.get("weight", 0),
-                "dimensions": data.get("dimensions", {}),
-                "warranty": data.get("warrantyInformation", ""),
-                "shipping": data.get("shippingInformation", ""),
-                "availability": data.get("availabilityStatus", ""),
-                "return_policy": data.get("returnPolicy", ""),
-                "minimum_order": data.get("minimumOrderQuantity", 1)
-            }
+            rating=min(float(data.get("rating", 0)), 5.0) if data.get("rating") else None,
+            stock_quantity=data.get("stock", 0),
+            available=data.get("stock", 0) > 0
         )
     
     def _generate_fallback_products(self, query: str, limit: int) -> List[Product]:
         """Generate fallback products when external API is unavailable."""
         logger.info("Generating fallback products")
         
+        from app.features.ecommerce.domain.entities import ProductImage
+        
         fallback_products = [
             Product(
                 id="fallback-1",
                 name=f"Classic {query.title()} Item",
                 description=f"A classic {query} item perfect for any occasion.",
-                price=29.99,
+                price=Decimal("29.99"),
                 currency="USD",
                 category="fashion",
                 brand="Generic",
-                image_url="https://via.placeholder.com/300x300?text=Classic+Item",
+                images=[ProductImage(
+                    url="https://via.placeholder.com/300x300?text=Classic+Item",
+                    alt_text=f"Classic {query} item",
+                    is_primary=True
+                )],
                 rating=4.0,
                 stock_quantity=50,
                 tags=[query, "classic", "versatile"],
-                discount_percentage=0
+                available=True
             ),
             Product(
                 id="fallback-2",
                 name=f"Premium {query.title()} Collection",
                 description=f"Premium quality {query} from our exclusive collection.",
-                price=79.99,
+                price=Decimal("79.99"),
                 currency="USD",
                 category="fashion",
                 brand="Premium",
-                image_url="https://via.placeholder.com/300x300?text=Premium+Item",
+                images=[ProductImage(
+                    url="https://via.placeholder.com/300x300?text=Premium+Item",
+                    alt_text=f"Premium {query} item",
+                    is_primary=True
+                )],
                 rating=4.5,
                 stock_quantity=25,
                 tags=[query, "premium", "quality"],
-                discount_percentage=10
+                available=True
             ),
             Product(
                 id="fallback-3",
                 name=f"Budget {query.title()} Option",
                 description=f"Affordable {query} option without compromising style.",
-                price=19.99,
+                price=Decimal("19.99"),
                 currency="USD",
                 category="fashion",
                 brand="Budget",
-                image_url="https://via.placeholder.com/300x300?text=Budget+Item",
+                images=[ProductImage(
+                    url="https://via.placeholder.com/300x300?text=Budget+Item",
+                    alt_text=f"Budget {query} item",
+                    is_primary=True
+                )],
                 rating=3.5,
                 stock_quantity=100,
                 tags=[query, "budget", "affordable"],
-                discount_percentage=5
+                available=True
             )
         ]
         
@@ -231,21 +266,32 @@ class HttpEcommerceRepository(EcommerceRepository):
             "sweater", "coat", "pants", "skirt", "blouse"
         ]
         
+        from app.features.ecommerce.domain.entities import ProductImage
+        
         products = []
         for i, item in enumerate(trending_items[:limit]):
+            original_price = Decimal(str(49.99 + (i * 10)))
+            has_discount = i % 2 == 0
+            price = original_price * Decimal("0.85") if has_discount else original_price
+            
             product = Product(
                 id=f"trending-{i+1}",
                 name=f"Trending {item.title()}",
                 description=f"Currently trending {item} in our collection.",
-                price=49.99 + (i * 10),
+                price=price,
+                original_price=original_price if has_discount else None,
                 currency="USD",
                 category="fashion",
                 brand="Trending",
-                image_url=f"https://via.placeholder.com/300x300?text=Trending+{item.title()}",
-                rating=4.2 + (i * 0.1),
+                images=[ProductImage(
+                    url=f"https://via.placeholder.com/300x300?text=Trending+{item.title()}",
+                    alt_text=f"Trending {item}",
+                    is_primary=True
+                )],
+                rating=min(4.2 + (i * 0.1), 5.0),
                 stock_quantity=75 - (i * 5),
                 tags=[item, "trending", "popular"],
-                discount_percentage=15 if i % 2 == 0 else 0
+                available=True
             )
             products.append(product)
         
@@ -264,19 +310,26 @@ class DummyEcommerceRepository(EcommerceRepository):
         max_price: Optional[float] = None
     ) -> List[Product]:
         """Return dummy search results."""
+        from app.features.ecommerce.domain.entities import ProductImage
+        
         dummy_products = [
             Product(
                 id="dummy-1",
                 name=f"Sample {query.title()} Product",
                 description=f"This is a sample {query} product for demonstration.",
-                price=39.99,
+                price=Decimal("39.99"),
                 currency="USD",
                 category=category or "general",
                 brand="Demo Brand",
-                image_url="https://via.placeholder.com/300x300?text=Sample+Product",
+                images=[ProductImage(
+                    url="https://via.placeholder.com/300x300?text=Sample+Product",
+                    alt_text=f"Sample {query} product",
+                    is_primary=True
+                )],
                 rating=4.0,
                 stock_quantity=10,
-                tags=[query, "sample", "demo"]
+                tags=[query, "sample", "demo"],
+                available=True
             )
         ]
         
@@ -284,36 +337,50 @@ class DummyEcommerceRepository(EcommerceRepository):
     
     async def get_product_by_id(self, product_id: str) -> Optional[Product]:
         """Return a dummy product."""
+        from app.features.ecommerce.domain.entities import ProductImage
+        
         return Product(
             id=product_id,
             name="Sample Product",
             description="This is a sample product for demonstration.",
-            price=39.99,
+            price=Decimal("39.99"),
             currency="USD",
             category="general",
             brand="Demo Brand",
-            image_url="https://via.placeholder.com/300x300?text=Sample+Product",
+            images=[ProductImage(
+                url="https://via.placeholder.com/300x300?text=Sample+Product",
+                alt_text="Sample product",
+                is_primary=True
+            )],
             rating=4.0,
             stock_quantity=10,
-            tags=["sample", "demo"]
+            tags=["sample", "demo"],
+            available=True
         )
     
     async def get_trending_products(self, limit: int = 10) -> List[Product]:
         """Return dummy trending products."""
+        from app.features.ecommerce.domain.entities import ProductImage
+        
         trending = []
         for i in range(min(limit, 5)):
             product = Product(
                 id=f"trending-dummy-{i+1}",
                 name=f"Trending Item {i+1}",
                 description=f"This is trending item number {i+1}.",
-                price=29.99 + (i * 10),
+                price=Decimal(str(29.99 + (i * 10))),
                 currency="USD",
                 category="trending",
                 brand="Trending Brand",
-                image_url=f"https://via.placeholder.com/300x300?text=Trending+{i+1}",
+                images=[ProductImage(
+                    url=f"https://via.placeholder.com/300x300?text=Trending+{i+1}",
+                    alt_text=f"Trending item {i+1}",
+                    is_primary=True
+                )],
                 rating=4.0 + (i * 0.2),
                 stock_quantity=20 - i,
-                tags=["trending", "popular", f"item-{i+1}"]
+                tags=["trending", "popular", f"item-{i+1}"],
+                available=True
             )
             trending.append(product)
         
