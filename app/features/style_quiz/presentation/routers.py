@@ -8,6 +8,7 @@ from app.features.style_quiz.application.schemas import (
     QuizSubmissionResponse,
     StyleDNAUpdateSchema
 )
+from app.features.style_quiz.infrastructure.repositories import SqlAlchemyStyleDNARepository
 from app.features.style_quiz.application.use_cases import (
     SubmitQuizUseCase,
     GetStyleDNAUseCase,
@@ -17,9 +18,47 @@ from app.features.style_quiz.application.use_cases import (
 from app.features.auth.presentation.dependencies import get_current_user
 from app.features.auth.domain.entities import User
 from app.core.di import Container
+from app.core.database import get_db_session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+# Dependency functions
+async def get_style_dna_repository(
+    db: AsyncSession = Depends(get_db_session)
+) -> SqlAlchemyStyleDNARepository:
+    """Get StyleDNA repository instance."""
+    return SqlAlchemyStyleDNARepository(db)
+
+
+async def get_submit_quiz_usecase(
+    repository: SqlAlchemyStyleDNARepository = Depends(get_style_dna_repository)
+) -> SubmitQuizUseCase:
+    """Get submit quiz use case."""
+    return SubmitQuizUseCase(repository)
+
+
+async def get_style_dna_usecase(
+    repository: SqlAlchemyStyleDNARepository = Depends(get_style_dna_repository)
+) -> GetStyleDNAUseCase:
+    """Get style DNA use case."""
+    return GetStyleDNAUseCase(repository)
+
+
+async def get_update_style_dna_usecase(
+    repository: SqlAlchemyStyleDNARepository = Depends(get_style_dna_repository)
+) -> UpdateStyleDNAUseCase:
+    """Get update style DNA use case."""
+    return UpdateStyleDNAUseCase(repository)
+
+
+async def get_delete_style_dna_usecase(
+    repository: SqlAlchemyStyleDNARepository = Depends(get_style_dna_repository)
+) -> DeleteStyleDNAUseCase:
+    """Get delete style DNA use case."""
+    return DeleteStyleDNAUseCase(repository)
 
 
 @router.post("/submit", response_model=QuizSubmissionResponse)

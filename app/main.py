@@ -159,11 +159,10 @@ from app.features.auth.presentation.routers_simple import router as auth_router
 from app.features.wardrobe.presentation.routers import router as wardrobe_router
 from app.features.style_quiz.presentation.routers import router as style_quiz_router
 from app.features.recommendations.presentation.routers import router as recommendations_router
+from app.features.ecommerce.presentation.routers import router as ecommerce_router
 
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(wardrobe_router, prefix="/api/v1", tags=["Wardrobe"])
 app.include_router(style_quiz_router, prefix="/api/v1/style-quiz", tags=["Style Quiz"])
 app.include_router(recommendations_router, prefix="/api/v1/recommendations", tags=["Recommendations"])
-
-# Will be added in next phases:
-# app.include_router(ecommerce_router, prefix="/api/v1/ecommerce", tags=["E-commerce"])
+app.include_router(ecommerce_router, prefix="/api/v1", tags=["E-commerce"])

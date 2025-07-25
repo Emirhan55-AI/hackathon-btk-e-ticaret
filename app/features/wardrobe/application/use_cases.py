@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 
 from app.features.wardrobe.domain.entities import ClothingItem
-from app.features.wardrobe.domain.repositories import ClothingItemRepository
+from app.features.wardrobe.domain.repositories import WardrobeRepository
 from app.features.wardrobe.application.schemas import (
     ClothingItemCreate, ClothingItemUpdate, ClothingItemResponse,
     ClothingItemUploadResponse, AITagResponse, WardrobeStats
@@ -20,7 +20,7 @@ class UploadClothingUseCase:
     
     def __init__(
         self, 
-        clothing_repository: ClothingItemRepository,
+        clothing_repository: WardrobeRepository,
         ai_service: AIServiceClient
     ):
         self.clothing_repository = clothing_repository
@@ -126,7 +126,7 @@ class UploadClothingUseCase:
 class GetClothingListUseCase:
     """Use case for retrieving user's clothing items."""
     
-    def __init__(self, clothing_repository: ClothingItemRepository):
+    def __init__(self, clothing_repository: WardrobeRepository):
         self.clothing_repository = clothing_repository
     
     async def execute(
@@ -167,7 +167,7 @@ class GetClothingListUseCase:
 class GetClothingItemUseCase:
     """Use case for retrieving a specific clothing item."""
     
-    def __init__(self, clothing_repository: ClothingItemRepository):
+    def __init__(self, clothing_repository: WardrobeRepository):
         self.clothing_repository = clothing_repository
     
     async def execute(self, user_id: UUID, item_id: UUID) -> ClothingItemResponse:
@@ -186,7 +186,7 @@ class GetClothingItemUseCase:
 class UpdateClothingItemUseCase:
     """Use case for updating a clothing item."""
     
-    def __init__(self, clothing_repository: ClothingItemRepository):
+    def __init__(self, clothing_repository: WardrobeRepository):
         self.clothing_repository = clothing_repository
     
     async def execute(
@@ -221,7 +221,7 @@ class UpdateClothingItemUseCase:
 class DeleteClothingItemUseCase:
     """Use case for deleting a clothing item."""
     
-    def __init__(self, clothing_repository: ClothingItemRepository):
+    def __init__(self, clothing_repository: WardrobeRepository):
         self.clothing_repository = clothing_repository
     
     async def execute(self, user_id: UUID, item_id: UUID) -> bool:
@@ -244,7 +244,7 @@ class DeleteClothingItemUseCase:
 class GetWardrobeStatsUseCase:
     """Use case for getting wardrobe statistics."""
     
-    def __init__(self, clothing_repository: ClothingItemRepository):
+    def __init__(self, clothing_repository: WardrobeRepository):
         self.clothing_repository = clothing_repository
     
     async def execute(self, user_id: UUID) -> WardrobeStats:

@@ -87,3 +87,7 @@ class StyleDNA(Base):
     
     def __repr__(self) -> str:
         return f"<StyleDNA(id={self.id}, user_id={self.user_id}, version={self.version})>"
+
+
+# Alias for backward compatibility
+StyleDNAModel = StyleDNA

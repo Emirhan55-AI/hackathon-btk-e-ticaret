@@ -157,3 +157,44 @@ class Outfit:
             "confidence_score": self.confidence_score,
             "is_complete": self.is_complete_outfit()
         }
+
+
+@dataclass
+class Recommendation:
+    """Recommendation domain entity."""
+    
+    id: uuid.UUID
+    user_id: uuid.UUID
+    outfit_data: Dict[str, Any]
+    recommendation_type: str  # "full_wardrobe", "quick", "occasion_based"
+    confidence_score: float  # 0.0 to 1.0
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime = field(default_factory=datetime.utcnow)
+    
+    def __post_init__(self):
+        """Post-initialization validation."""
+        if not (0.0 <= self.confidence_score <= 1.0):
+            raise ValueError("Confidence score must be between 0.0 and 1.0")
+        
+        if self.recommendation_type not in ["full_wardrobe", "quick", "occasion_based"]:
+            raise ValueError(
+                "Recommendation type must be one of: "
+                "full_wardrobe, quick, occasion_based"
+            )
+    
+    @property
+    def is_high_confidence(self) -> bool:
+        """Check if this is a high confidence recommendation."""
+        return self.confidence_score >= 0.8
+    
+    @property
+    def age_in_hours(self) -> float:
+        """Get age of recommendation in hours."""
+        now = datetime.utcnow()
+        delta = now - self.created_at
+        return delta.total_seconds() / 3600
+    
+    def is_expired(self, max_age_hours: int = 24) -> bool:
+        """Check if recommendation is expired."""
+        return self.age_in_hours > max_age_hours

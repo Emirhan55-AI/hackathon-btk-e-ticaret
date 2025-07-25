@@ -108,3 +108,70 @@ class Outfit(Base):
     
     def __repr__(self) -> str:
         return f"<Outfit(id={self.id}, name={self.name}, occasion={self.occasion})>"
+
+
+class Recommendation(Base):
+    """Recommendation model for storing AI-generated recommendations."""
+    
+    __tablename__ = "recommendations"
+    
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        unique=True,
+        nullable=False
+    )
+    
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    
+    # Recommendation data stored as JSONB
+    outfit_data = Column(
+        JSONB,
+        nullable=False,
+        default=dict
+    )
+    
+    recommendation_type = Column(
+        String(50),
+        nullable=False,
+        default="full_wardrobe"
+    )
+    
+    confidence_score = Column(
+        String(10),  # Store as string to avoid float precision issues
+        nullable=False,
+        default="0.0"
+    )
+    
+    # Additional metadata
+    meta_data = Column(
+        JSONB,
+        nullable=True,
+        default=dict
+    )
+    
+    # Timestamps
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+    
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
+    
+    # Relationships
+    user = relationship("User", back_populates="recommendations")
+    
+    def __repr__(self) -> str:
+        return f"<Recommendation(id={self.id}, user_id={self.user_id}, type={self.recommendation_type})>"

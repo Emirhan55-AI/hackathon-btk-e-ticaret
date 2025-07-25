@@ -16,7 +16,6 @@ from app.features.auth.presentation.dependencies import (
 )
 from app.core.config import settings
 from app.core.security import create_csrf_token
-from app.core.di import get_container
 
 logger = logging.getLogger("app.features.auth.presentation.routers")
 

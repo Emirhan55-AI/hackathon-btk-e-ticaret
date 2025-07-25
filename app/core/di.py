@@ -11,7 +11,6 @@ class Container(containers.DeclarativeContainer):
     # Wire the container to modules that need dependencies
     wiring_config = containers.WiringConfiguration(
         modules=[
-            "app.features.auth.presentation.routers",
             "app.features.wardrobe.presentation.routers",
             "app.features.style_quiz.presentation.routers",
             "app.features.recommendations.presentation.routers",
@@ -51,7 +50,7 @@ class Container(containers.DeclarativeContainer):
     )
     
     recommendations_repository = providers.Factory(
-        "app.features.recommendations.infrastructure.repositories.RecommendationRepositoryImpl",
+        "app.features.recommendations.infrastructure.repositories.SqlAlchemyRecommendationsRepository",
         session_factory=database.provided.session_factory,
     )
     
@@ -142,6 +141,34 @@ class Container(containers.DeclarativeContainer):
         "app.features.recommendations.application.use_cases.GenerateQuickRecommendationsUseCase",
         ai_client=ai_service_client,
         style_dna_repository=style_dna_repository,
+    )
+    
+    # E-commerce Repository
+    ecommerce_repository = providers.Factory(
+        "app.features.ecommerce.infrastructure.repositories.HttpEcommerceRepository",
+        base_url=config.ecommerce_api_url,
+        api_key=config.ecommerce_api_key,
+    )
+    
+    # E-commerce Use Cases
+    search_products_use_case = providers.Factory(
+        "app.features.ecommerce.application.use_cases.SearchProductsUseCase",
+        repository=ecommerce_repository,
+    )
+    
+    get_product_by_id_use_case = providers.Factory(
+        "app.features.ecommerce.application.use_cases.GetProductByIdUseCase",
+        repository=ecommerce_repository,
+    )
+    
+    get_trending_products_use_case = providers.Factory(
+        "app.features.ecommerce.application.use_cases.GetTrendingProductsUseCase",
+        repository=ecommerce_repository,
+    )
+    
+    get_product_recommendations_use_case = providers.Factory(
+        "app.features.ecommerce.application.use_cases.GetProductRecommendationsUseCase",
+        repository=ecommerce_repository,
     )
 
 

@@ -161,3 +161,115 @@ class AuthRepositoryImpl(AuthRepository):
             created_at=model.created_at,
             updated_at=model.updated_at
         )
+
+
+class SqlAlchemyUserRepository(AuthRepository):
+    """SQLAlchemy User Repository with direct session access."""
+    
+    def __init__(self, session: AsyncSession):
+        self.session = session
+    
+    async def get_user_by_id(self, user_id: uuid.UUID) -> Optional[UserEntity]:
+        """Get user by ID."""
+        try:
+            stmt = select(UserModel).where(UserModel.id == user_id)
+            result = await self.session.execute(stmt)
+            user_model = result.scalar_one_or_none()
+            
+            if user_model:
+                return self._model_to_entity(user_model)
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error getting user by ID {user_id}: {e}")
+            raise
+    
+    async def get_user_by_email(self, email: str) -> Optional[UserEntity]:
+        """Get user by email."""
+        try:
+            stmt = select(UserModel).where(UserModel.email == email)
+            result = await self.session.execute(stmt)
+            user_model = result.scalar_one_or_none()
+            
+            if user_model:
+                return self._model_to_entity(user_model)
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error getting user by email {email}: {e}")
+            raise
+    
+    async def create_user(self, user: UserEntity, password_hash: str) -> UserEntity:
+        """Create a new user."""
+        try:
+            user_model = UserModel(
+                id=user.id,
+                email=user.email,
+                full_name=user.full_name,
+                password_hash=password_hash,
+                is_active=user.is_active,
+                is_verified=user.is_verified
+            )
+            
+            self.session.add(user_model)
+            await self.session.commit()
+            await self.session.refresh(user_model)
+            
+            return self._model_to_entity(user_model)
+            
+        except Exception as e:
+            await self.session.rollback()
+            logger.error(f"Error creating user {user.email}: {e}")
+            raise
+    
+    async def update_user(self, user_id: uuid.UUID, **kwargs) -> Optional[UserEntity]:
+        """Update user information."""
+        try:
+            stmt = select(UserModel).where(UserModel.id == user_id)
+            result = await self.session.execute(stmt)
+            user_model = result.scalar_one_or_none()
+            
+            if not user_model:
+                return None
+            
+            for key, value in kwargs.items():
+                if hasattr(user_model, key):
+                    setattr(user_model, key, value)
+            
+            await self.session.commit()
+            await self.session.refresh(user_model)
+            
+            return self._model_to_entity(user_model)
+            
+        except Exception as e:
+            await self.session.rollback()
+            logger.error(f"Error updating user {user_id}: {e}")
+            raise
+    
+    async def get_user_credentials(self, email: str) -> Optional[tuple[UserEntity, str]]:
+        """Get user credentials (user entity and password hash)."""
+        try:
+            stmt = select(UserModel).where(UserModel.email == email)
+            result = await self.session.execute(stmt)
+            user_model = result.scalar_one_or_none()
+            
+            if user_model:
+                user_entity = self._model_to_entity(user_model)
+                return user_entity, user_model.password_hash
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error getting user credentials for {email}: {e}")
+            raise
+    
+    def _model_to_entity(self, model: UserModel) -> UserEntity:
+        """Convert SQLAlchemy model to domain entity."""
+        return UserEntity(
+            id=model.id,
+            email=model.email,
+            full_name=model.full_name,
+            is_active=model.is_active,
+            is_verified=model.is_verified,
+            created_at=model.created_at,
+            updated_at=model.updated_at
+        )

@@ -125,8 +125,8 @@ class ClothingItemSearch(BaseModel):
 
 class BulkOperation(BaseModel):
     """Schema for bulk operations."""
-    item_ids: List[uuid.UUID] = Field(..., min_items=1)
-    operation: str = Field(..., regex="^(delete|favorite|unfavorite|update_tags)$")
+    item_ids: List[uuid.UUID] = Field(..., min_length=1)
+    operation: str = Field(..., pattern="^(delete|favorite|unfavorite|update_tags)$")
     data: Optional[Dict[str, Any]] = None
 
 
