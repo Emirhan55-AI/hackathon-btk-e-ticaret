@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failure.dart';
+import '../../../../core/error/failures.dart';
 import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
 
@@ -10,12 +10,7 @@ class GetCurrentUserUseCase {
   const GetCurrentUserUseCase(this._repository);
 
   /// Execute get current user
-  Future<Either<Failure, User?>> call() async {
-    try {
-      final user = await _repository.getCurrentUser();
-      return Right(user);
-    } catch (e) {
-      return Left(AuthFailure(message: e.toString()));
-    }
+  Future<Either<Failure, User>> call() async {
+    return await _repository.getCurrentUser();
   }
 }

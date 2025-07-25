@@ -4,18 +4,22 @@ import 'package:http/http.dart' as http;
 
 import '../models/user_model.dart';
 import 'auth_remote_data_source.dart';
-import '../../../core/constants/app_constants.dart';
-import '../../../core/error/exceptions.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/storage/secure_storage_service.dart';
 
 /// HTTP implementation of authentication remote data source
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final http.Client _httpClient;
+  final SecureStorageService _secureStorage;
   final String _baseUrl;
 
   AuthRemoteDataSourceImpl({
     required http.Client httpClient,
+    required SecureStorageService secureStorage,
     String? baseUrl,
   })  : _httpClient = httpClient,
+        _secureStorage = secureStorage,
         _baseUrl = baseUrl ?? AppConstants.apiBaseUrl;
 
   @override

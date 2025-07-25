@@ -6,7 +6,6 @@ import '../../domain/entities/auth_state.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/login_usecase.dart';
-import '../../domain/usecases/register_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../data/repositories/http_auth_repository.dart';
@@ -43,11 +42,6 @@ final loginUseCaseProvider = Provider<LoginUseCase>((ref) {
   return LoginUseCase(ref.read(authRepositoryProvider));
 });
 
-/// Register use case provider
-final registerUseCaseProvider = Provider<RegisterUseCase>((ref) {
-  return RegisterUseCase(ref.read(authRepositoryProvider));
-});
-
 /// Logout use case provider
 final logoutUseCaseProvider = Provider<LogoutUseCase>((ref) {
   return LogoutUseCase(ref.read(authRepositoryProvider));
@@ -58,20 +52,17 @@ final getCurrentUserUseCaseProvider = Provider<GetCurrentUserUseCase>((ref) {
   return GetCurrentUserUseCase(ref.read(authRepositoryProvider));
 });
 
-/// Auth state notifier
+/// Auth state notifier (minimal version with login only)
 class AuthNotifier extends StateNotifier<AuthState> {
   final LoginUseCase _loginUseCase;
-  final RegisterUseCase _registerUseCase;
   final LogoutUseCase _logoutUseCase;
   final GetCurrentUserUseCase _getCurrentUserUseCase;
 
   AuthNotifier({
     required LoginUseCase loginUseCase,
-    required RegisterUseCase registerUseCase,
     required LogoutUseCase logoutUseCase,
     required GetCurrentUserUseCase getCurrentUserUseCase,
   })  : _loginUseCase = loginUseCase,
-        _registerUseCase = registerUseCase,
         _logoutUseCase = logoutUseCase,
         _getCurrentUserUseCase = getCurrentUserUseCase,
         super(const AuthState.initial());
@@ -98,28 +89,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final result = await _loginUseCase(
       email: email,
       password: password,
-    );
-    
-    result.fold(
-      (failure) => state = AuthState.error(failure),
-      (user) => state = AuthState.authenticated(user),
-    );
-  }
-
-  /// Register new user
-  Future<void> register({
-    required String email,
-    required String password,
-    String? firstName,
-    String? lastName,
-  }) async {
-    state = const AuthState.loading();
-    
-    final result = await _registerUseCase(
-      email: email,
-      password: password,
-      firstName: firstName,
-      lastName: lastName,
     );
     
     result.fold(
@@ -165,11 +134,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
 }
 
-/// Auth state notifier provider
+/// Auth state notifier provider (minimal version)
 final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(
     loginUseCase: ref.read(loginUseCaseProvider),
-    registerUseCase: ref.read(registerUseCaseProvider),
     logoutUseCase: ref.read(logoutUseCaseProvider),
     getCurrentUserUseCase: ref.read(getCurrentUserUseCaseProvider),
   );
