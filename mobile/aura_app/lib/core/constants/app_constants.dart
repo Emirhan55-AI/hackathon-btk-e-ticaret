@@ -4,6 +4,10 @@ class AppConstants {
   static const String appName = 'Aura';
   static const String appVersion = '1.0.0';
   
+  // API Configuration
+  static const String apiBaseUrl = 'http://localhost:8000/api/v1/';
+  static const Duration requestTimeout = Duration(seconds: 30);
+  
   // Storage Keys
   static const String accessTokenKey = 'access_token';
   static const String refreshTokenKey = 'refresh_token';

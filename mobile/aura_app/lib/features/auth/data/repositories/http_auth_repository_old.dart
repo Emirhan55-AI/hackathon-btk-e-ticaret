@@ -15,91 +15,19 @@ class HttpAuthRepository implements AuthRepository {
   }) : _remoteDataSource = remoteDataSource;
 
   @override
-  Future<Either<Failure, User>> login(String email, String password) async {
+  Future<Either<Failure, AuthResult>> login(LoginRequest request) async {
     try {
-      final userModel = await _remoteDataSource.login(email, password);
-      return Right(userModel.toEntity());
-    } on ApiException catch (e) {
-      return Left(ServerFailure(
-        message: e.message,
-        details: 'Status code: ${e.statusCode}',
-      ));
-    } on NetworkException catch (e) {
-      return Left(NetworkFailure(message: e.message));
-    } on UnknownException catch (e) {
-      return Left(UnknownFailure(message: e.message));
-    } catch (e) {
-      return Left(UnknownFailure(message: 'Unexpected error: ${e.toString()}'));
-    }
-  }
-
-  @override
-  Future<Either<Failure, User>> register({
-    required String email,
-    required String password,
-    String? firstName,
-    String? lastName,
-  }) async {
-    try {
-      final userModel = await _remoteDataSource.register(
-        email: email,
-        password: password,
-        firstName: firstName,
-        lastName: lastName,
+      final response = await httpClient.post(
+        Uri.parse('${ApiConstants.baseUrl}/auth/login'),
+        headers: _headers,
+        body: jsonEncode(request.toJson()),
       );
-      return Right(userModel.toEntity());
-    } on ApiException catch (e) {
-      return Left(ServerFailure(
-        message: e.message,
-        details: 'Status code: ${e.statusCode}',
-      ));
-    } on NetworkException catch (e) {
-      return Left(NetworkFailure(message: e.message));
-    } on UnknownException catch (e) {
-      return Left(UnknownFailure(message: e.message));
-    } catch (e) {
-      return Left(UnknownFailure(message: 'Unexpected error: ${e.toString()}'));
-    }
-  }
 
-  @override
-  Future<Either<Failure, void>> logout() async {
-    try {
-      await _remoteDataSource.logout();
-      return const Right(null);
-    } on ApiException catch (e) {
-      return Left(ServerFailure(
-        message: e.message,
-        details: 'Status code: ${e.statusCode}',
-      ));
-    } on NetworkException catch (e) {
-      return Left(NetworkFailure(message: e.message));
-    } on UnknownException catch (e) {
-      return Left(UnknownFailure(message: e.message));
-    } catch (e) {
-      return Left(UnknownFailure(message: 'Unexpected error: ${e.toString()}'));
-    }
-  }
-
-  @override
-  Future<Either<Failure, User>> getCurrentUser() async {
-    try {
-      final userModel = await _remoteDataSource.getCurrentUser();
-      return Right(userModel.toEntity());
-    } on ApiException catch (e) {
-      return Left(ServerFailure(
-        message: e.message,
-        details: 'Status code: ${e.statusCode}',
-      ));
-    } on NetworkException catch (e) {
-      return Left(NetworkFailure(message: e.message));
-    } on UnknownException catch (e) {
-      return Left(UnknownFailure(message: e.message));
-    } catch (e) {
-      return Left(UnknownFailure(message: 'Unexpected error: ${e.toString()}'));
-    }
-  }
-}
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final result = AuthResult.fromJson(data);
+        
+        // Store token securely
         await secureStorage.setAccessToken(result.token.accessToken);
         await secureStorage.setRefreshToken(result.token.refreshToken);
         
