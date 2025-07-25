@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/app_utils.dart';
-import '../providers/auth_provider.dart';
-import '../widgets/auth_button.dart';
-import '../widgets/auth_text_field.dart';
+import '../notifiers/auth_provider.dart';
+import '../components/auth_button.dart';
+import '../components/auth_text_field.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 

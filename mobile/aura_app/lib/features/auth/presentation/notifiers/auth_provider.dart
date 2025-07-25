@@ -6,6 +6,10 @@ import '../../domain/entities/auth_state.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/entities/auth_token.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../domain/usecases/login_usecase.dart';
+import '../../domain/usecases/register_usecase.dart';
+import '../../domain/usecases/logout_usecase.dart';
+import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../data/repositories/http_auth_repository.dart';
 
 /// HTTP client provider
@@ -26,13 +30,46 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   );
 });
 
+/// Use case providers
+final loginUseCaseProvider = Provider<LoginUseCase>((ref) {
+  return LoginUseCase(ref.read(authRepositoryProvider));
+});
+
+final registerUseCaseProvider = Provider<RegisterUseCase>((ref) {
+  return RegisterUseCase(ref.read(authRepositoryProvider));
+});
+
+final logoutUseCaseProvider = Provider<LogoutUseCase>((ref) {
+  return LogoutUseCase(ref.read(authRepositoryProvider));
+});
+
+final getCurrentUserUseCaseProvider = Provider<GetCurrentUserUseCase>((ref) {
+  return GetCurrentUserUseCase(ref.read(authRepositoryProvider));
+});
+
 /// Auth state notifier
 class AuthNotifier extends StateNotifier<AuthState> {
+  final LoginUseCase _loginUseCase;
+  final RegisterUseCase _registerUseCase;
+  final LogoutUseCase _logoutUseCase;
+  final GetCurrentUserUseCase _getCurrentUserUseCase;
   final AuthRepository _authRepository;
   final SecureStorageService _secureStorage;
 
-  AuthNotifier(this._authRepository, this._secureStorage)
-      : super(AuthState.initial);
+  AuthNotifier({
+    required LoginUseCase loginUseCase,
+    required RegisterUseCase registerUseCase,
+    required LogoutUseCase logoutUseCase,
+    required GetCurrentUserUseCase getCurrentUserUseCase,
+    required AuthRepository authRepository,
+    required SecureStorageService secureStorage,
+  })  : _loginUseCase = loginUseCase,
+        _registerUseCase = registerUseCase,
+        _logoutUseCase = logoutUseCase,
+        _getCurrentUserUseCase = getCurrentUserUseCase,
+        _authRepository = authRepository,
+        _secureStorage = secureStorage,
+        super(AuthState.initial);
 
   /// Check current authentication status
   Future<void> checkAuthStatus() async {
@@ -47,17 +84,29 @@ class AuthNotifier extends StateNotifier<AuthState> {
         return;
       }
 
-      // Try to get current user
-      final user = await _authRepository.getCurrentUser();
+      // Try to get current user using use case
+      final result = await _getCurrentUserUseCase();
       
-      // Create auth token (we don't have expiry info from storage)
-      final authToken = AuthToken(
-        accessToken: token,
-        refreshToken: refreshToken,
-        expiresAt: DateTime.now().add(const Duration(hours: 1)), // Default expiry
-      );
+      result.fold(
+        (failure) {
+          // Token might be expired, try to refresh
+          _tryRefreshToken();
+        },
+        (user) {
+          if (user != null) {
+            // Create auth token (we don't have expiry info from storage)
+            final authToken = AuthToken(
+              accessToken: token,
+              refreshToken: refreshToken,
+              expiresAt: DateTime.now().add(const Duration(hours: 1)), // Default expiry
+            );
 
-      state = AuthState.authenticated(user: user, token: authToken);
+            state = AuthState.authenticated(user: user, token: authToken);
+          } else {
+            state = AuthState.unauthenticated();
+          }
+        },
+      );
     } catch (e) {
       // Token might be expired, try to refresh
       await _tryRefreshToken();
@@ -68,17 +117,21 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> login(String email, String password) async {
     state = AuthState.loading;
 
-    try {
-      final request = LoginRequest(email: email, password: password);
-      final result = await _authRepository.login(request);
+    final result = await _loginUseCase(email: email, password: password);
 
-      state = AuthState.authenticated(
-        user: result.user,
-        token: result.token,
-      );
-    } catch (e) {
-      state = AuthState.error(e.toString());
-    }
+    result.fold(
+      (failure) => state = AuthState.error(failure.message),
+      (user) {
+        // We need to get the token from storage since LoginUseCase only returns User
+        // In a real app, you might want to return both user and token from use case
+        state = state.copyWith(
+          status: AuthStatus.authenticated,
+          user: user,
+          errorMessage: null,
+          isLoading: false,
+        );
+      },
+    );
   }
 
   /// Register new user
@@ -110,13 +163,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// Logout current user
   Future<void> logout() async {
-    try {
-      await _authRepository.logout();
-    } catch (e) {
-      // Continue with logout even if server request fails
-    } finally {
-      state = AuthState.unauthenticated();
-    }
+    final result = await _logoutUseCase();
+    
+    result.fold(
+      (failure) {
+        // Even if logout fails on server, clear local state
+        state = AuthState.unauthenticated();
+      },
+      (_) {
+        state = AuthState.unauthenticated();
+      },
+    );
   }
 
   /// Update user profile
@@ -211,8 +268,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
 /// Auth state notifier provider
 final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(
-    ref.read(authRepositoryProvider),
-    ref.read(secureStorageProvider),
+    loginUseCase: ref.read(loginUseCaseProvider),
+    registerUseCase: ref.read(registerUseCaseProvider),
+    logoutUseCase: ref.read(logoutUseCaseProvider),
+    getCurrentUserUseCase: ref.read(getCurrentUserUseCaseProvider),
+    authRepository: ref.read(authRepositoryProvider),
+    secureStorage: ref.read(secureStorageProvider),
   );
 });
 

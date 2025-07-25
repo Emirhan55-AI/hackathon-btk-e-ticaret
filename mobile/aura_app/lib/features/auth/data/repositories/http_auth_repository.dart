@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:dartz/dartz.dart';
 
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/error/failure.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/entities/auth_token.dart';
@@ -29,7 +31,7 @@ class HttpAuthRepository implements AuthRepository {
       };
 
   @override
-  Future<AuthResult> login(LoginRequest request) async {
+  Future<Either<Failure, AuthResult>> login(LoginRequest request) async {
     try {
       final response = await httpClient.post(
         Uri.parse('${ApiConstants.baseUrl}/auth/login'),
@@ -45,22 +47,28 @@ class HttpAuthRepository implements AuthRepository {
         await secureStorage.setAccessToken(result.token.accessToken);
         await secureStorage.setRefreshToken(result.token.refreshToken);
         
-        return result;
+        return Right(result);
       } else {
         final error = jsonDecode(response.body);
-        throw ServerException(
+        return Left(ServerFailure(
           message: error['detail'] ?? 'Login failed',
-          statusCode: response.statusCode,
-        );
+          details: 'Status code: ${response.statusCode}',
+        ));
       }
+    } on ServerException catch (e) {
+      return Left(ServerFailure(
+        message: e.message,
+        details: 'Status code: ${e.statusCode}',
+      ));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message));
     } catch (e) {
-      if (e is ServerException) rethrow;
-      throw const NetworkException(message: 'Failed to connect to server');
+      return Left(NetworkFailure(message: 'Failed to connect to server'));
     }
   }
 
   @override
-  Future<AuthResult> register(RegisterRequest request) async {
+  Future<Either<Failure, AuthResult>> register(RegisterRequest request) async {
     try {
       final response = await httpClient.post(
         Uri.parse('${ApiConstants.baseUrl}/auth/register'),
@@ -76,22 +84,28 @@ class HttpAuthRepository implements AuthRepository {
         await secureStorage.setAccessToken(result.token.accessToken);
         await secureStorage.setRefreshToken(result.token.refreshToken);
         
-        return result;
+        return Right(result);
       } else {
         final error = jsonDecode(response.body);
-        throw ServerException(
+        return Left(ServerFailure(
           message: error['detail'] ?? 'Registration failed',
-          statusCode: response.statusCode,
-        );
+          details: 'Status code: ${response.statusCode}',
+        ));
       }
+    } on ServerException catch (e) {
+      return Left(ServerFailure(
+        message: e.message,
+        details: 'Status code: ${e.statusCode}',
+      ));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message));
     } catch (e) {
-      if (e is ServerException) rethrow;
-      throw const NetworkException(message: 'Failed to connect to server');
+      return Left(NetworkFailure(message: 'Failed to connect to server'));
     }
   }
 
   @override
-  Future<void> logout() async {
+  Future<Either<Failure, void>> logout() async {
     try {
       final token = await secureStorage.getAccessToken();
       if (token != null) {
@@ -100,16 +114,19 @@ class HttpAuthRepository implements AuthRepository {
           headers: _headersWithAuth(token),
         );
       }
-    } catch (e) {
-      // Continue with logout even if server request fails
-    } finally {
+      
       // Always clear local storage
       await secureStorage.clearAll();
+      return const Right(null);
+    } catch (e) {
+      // Continue with logout even if server request fails
+      await secureStorage.clearAll();
+      return const Right(null);
     }
   }
 
   @override
-  Future<AuthToken> refreshToken(String refreshToken) async {
+  Future<Either<Failure, AuthToken>> refreshToken(String refreshToken) async {
     try {
       final response = await httpClient.post(
         Uri.parse('${ApiConstants.baseUrl}/auth/refresh'),
@@ -125,25 +142,31 @@ class HttpAuthRepository implements AuthRepository {
         await secureStorage.setAccessToken(token.accessToken);
         await secureStorage.setRefreshToken(token.refreshToken);
         
-        return token;
+        return Right(token);
       } else {
-        throw ServerException(
+        return Left(ServerFailure(
           message: 'Token refresh failed',
-          statusCode: response.statusCode,
-        );
+          details: 'Status code: ${response.statusCode}',
+        ));
       }
+    } on ServerException catch (e) {
+      return Left(ServerFailure(
+        message: e.message,
+        details: 'Status code: ${e.statusCode}',
+      ));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message));
     } catch (e) {
-      if (e is ServerException) rethrow;
-      throw const NetworkException(message: 'Failed to refresh token');
+      return const Left(NetworkFailure(message: 'Failed to refresh token'));
     }
   }
 
   @override
-  Future<User> getCurrentUser() async {
+  Future<Either<Failure, User?>> getCurrentUser() async {
     try {
       final token = await secureStorage.getAccessToken();
       if (token == null) {
-        throw const AuthException(message: 'No authentication token found');
+        return const Left(AuthFailure(message: 'No authentication token found'));
       }
 
       final response = await httpClient.get(
@@ -153,16 +176,24 @@ class HttpAuthRepository implements AuthRepository {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return User.fromJson(data);
+        return Right(User.fromJson(data));
       } else {
-        throw ServerException(
+        return Left(ServerFailure(
           message: 'Failed to get user profile',
-          statusCode: response.statusCode,
-        );
+          details: 'Status code: ${response.statusCode}',
+        ));
       }
+    } on AuthException catch (e) {
+      return Left(AuthFailure(message: e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(
+        message: e.message,
+        details: 'Status code: ${e.statusCode}',
+      ));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message));
     } catch (e) {
-      if (e is ServerException || e is AuthException) rethrow;
-      throw const NetworkException(message: 'Failed to get user profile');
+      return const Left(NetworkFailure(message: 'Failed to get user profile'));
     }
   }
 

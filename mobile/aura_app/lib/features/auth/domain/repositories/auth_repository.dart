@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failure.dart';
 import '../entities/user.dart';
 import '../entities/auth_token.dart';
 
@@ -64,44 +66,44 @@ class AuthResult {
 /// Abstract authentication repository
 abstract class AuthRepository {
   /// Login with email and password
-  Future<AuthResult> login(LoginRequest request);
+  Future<Either<Failure, AuthResult>> login(LoginRequest request);
 
   /// Register new user
-  Future<AuthResult> register(RegisterRequest request);
+  Future<Either<Failure, AuthResult>> register(RegisterRequest request);
 
   /// Logout current user
-  Future<void> logout();
+  Future<Either<Failure, void>> logout();
 
   /// Refresh authentication token
-  Future<AuthToken> refreshToken(String refreshToken);
+  Future<Either<Failure, AuthToken>> refreshToken(String refreshToken);
 
   /// Get current user profile
-  Future<User> getCurrentUser();
+  Future<Either<Failure, User?>> getCurrentUser();
 
   /// Update user profile
-  Future<User> updateProfile(Map<String, dynamic> updates);
+  Future<Either<Failure, User>> updateProfile(Map<String, dynamic> updates);
 
   /// Change password
-  Future<void> changePassword({
+  Future<Either<Failure, void>> changePassword({
     required String currentPassword,
     required String newPassword,
   });
 
   /// Send password reset email
-  Future<void> sendPasswordResetEmail(String email);
+  Future<Either<Failure, void>> sendPasswordResetEmail(String email);
 
   /// Reset password with token
-  Future<void> resetPassword({
+  Future<Either<Failure, void>> resetPassword({
     required String token,
     required String newPassword,
   });
 
   /// Verify email with token
-  Future<void> verifyEmail(String token);
+  Future<Either<Failure, void>> verifyEmail(String token);
 
   /// Resend email verification
-  Future<void> resendEmailVerification();
+  Future<Either<Failure, void>> resendEmailVerification();
 
   /// Delete user account
-  Future<void> deleteAccount();
+  Future<Either<Failure, void>> deleteAccount();
 }
