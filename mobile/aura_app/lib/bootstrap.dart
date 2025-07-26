@@ -1,27 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/constants/app_colors.dart';
 
 /// Bootstrap the application
+/// This function initializes all necessary components before running the app
 Future<void> bootstrap() async {
+  // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set system UI overlay style
+  // Set system UI overlay style for consistent look across platforms
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: AppColors.surface,
+      systemNavigationBarColor: Colors.white,
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
 
-  // Set preferred orientations
+  // Set preferred orientations to portrait only
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  // Initialize secure storage if needed
+  // This ensures the storage is ready before the app starts
+  try {
+    // Any additional initialization can be added here
+    // For example: await SecureStorage.initialize();
+  } catch (e) {
+    // Log error but don't block app startup
+    debugPrint('Bootstrap warning: ${e.toString()}');
+  }
 }
 
 /// Provider wrapper to initialize Riverpod
