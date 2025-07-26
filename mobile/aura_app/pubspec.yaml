@@ -17,6 +17,7 @@ dependencies:
   
   # Functional Programming
   dartz: ^0.10.1
+  equatable: ^2.0.5
   
   # Networking
   http: ^1.2.1
