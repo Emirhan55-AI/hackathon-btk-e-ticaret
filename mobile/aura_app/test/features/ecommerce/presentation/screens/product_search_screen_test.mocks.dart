@@ -45,10 +45,6 @@ class _FakeProductSearchState_0 extends _i1.SmartFake
 /// See the documentation for Mockito's code generation for more information.
 class MockProductSearchNotifier extends _i1.Mock
     implements _i3.ProductSearchNotifier {
-  MockProductSearchNotifier() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   set onError(_i4.ErrorListener? _onError) => super.noSuchMethod(
         Invocation.setter(
@@ -62,18 +58,24 @@ class MockProductSearchNotifier extends _i1.Mock
   bool get mounted => (super.noSuchMethod(
         Invocation.getter(#mounted),
         returnValue: false,
+        returnValueForMissingStub: false,
       ) as bool);
 
   @override
   _i5.Stream<_i2.ProductSearchState> get stream => (super.noSuchMethod(
         Invocation.getter(#stream),
         returnValue: _i5.Stream<_i2.ProductSearchState>.empty(),
+        returnValueForMissingStub: _i5.Stream<_i2.ProductSearchState>.empty(),
       ) as _i5.Stream<_i2.ProductSearchState>);
 
   @override
   _i2.ProductSearchState get state => (super.noSuchMethod(
         Invocation.getter(#state),
         returnValue: _FakeProductSearchState_0(
+          this,
+          Invocation.getter(#state),
+        ),
+        returnValueForMissingStub: _FakeProductSearchState_0(
           this,
           Invocation.getter(#state),
         ),
@@ -95,12 +97,17 @@ class MockProductSearchNotifier extends _i1.Mock
           this,
           Invocation.getter(#debugState),
         ),
+        returnValueForMissingStub: _FakeProductSearchState_0(
+          this,
+          Invocation.getter(#debugState),
+        ),
       ) as _i2.ProductSearchState);
 
   @override
   bool get hasListeners => (super.noSuchMethod(
         Invocation.getter(#hasListeners),
         returnValue: false,
+        returnValueForMissingStub: false,
       ) as bool);
 
   @override
@@ -184,6 +191,7 @@ class MockProductSearchNotifier extends _i1.Mock
           [],
         ),
         returnValue: _i5.Future<List<String>>.value(<String>[]),
+        returnValueForMissingStub: _i5.Future<List<String>>.value(<String>[]),
       ) as _i5.Future<List<String>>);
 
   @override
@@ -194,6 +202,7 @@ class MockProductSearchNotifier extends _i1.Mock
           {#category: category},
         ),
         returnValue: _i5.Future<List<String>>.value(<String>[]),
+        returnValueForMissingStub: _i5.Future<List<String>>.value(<String>[]),
       ) as _i5.Future<List<String>>);
 
   @override
@@ -210,6 +219,7 @@ class MockProductSearchNotifier extends _i1.Mock
           ],
         ),
         returnValue: false,
+        returnValueForMissingStub: false,
       ) as bool);
 
   @override
@@ -224,6 +234,7 @@ class MockProductSearchNotifier extends _i1.Mock
           {#fireImmediately: fireImmediately},
         ),
         returnValue: () {},
+        returnValueForMissingStub: () {},
       ) as _i4.RemoveListener);
 
   @override

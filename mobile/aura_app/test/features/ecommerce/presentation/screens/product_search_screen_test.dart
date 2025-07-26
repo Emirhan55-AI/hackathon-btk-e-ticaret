@@ -10,8 +10,8 @@ import 'package:aura_app/features/ecommerce/domain/entities/product.dart';
 import 'package:aura_app/core/providers/app_providers.dart';
 import 'package:aura_app/core/error/failures.dart';
 
-// Generate mock classes
-@GenerateMocks([ProductSearchNotifier])
+// Generate mock classes with nice defaults
+@GenerateNiceMocks([MockSpec<ProductSearchNotifier>()])
 import 'product_search_screen_test.mocks.dart';
 
 void main() {
@@ -19,6 +19,14 @@ void main() {
 
   setUp(() {
     mockNotifier = MockProductSearchNotifier();
+    // Configure default state for mock notifier
+    when(mockNotifier.state).thenReturn(const ProductSearchState());
+    // Stub addListener to prevent runtime errors
+    when(mockNotifier.addListener(any, fireImmediately: anyNamed('fireImmediately')))
+        .thenReturn(() {});
+    // Stub the methods that might be called
+    when(mockNotifier.searchProducts(any)).thenAnswer((_) async {});
+    when(mockNotifier.loadMoreProducts()).thenAnswer((_) async {});
   });
 
   group('ProductSearchScreen Widget Tests', () {
@@ -43,6 +51,7 @@ void main() {
     Widget createWidgetUnderTest({String? initialQuery, String? category}) {
       return ProviderScope(
         overrides: [
+          // Override the provider to return our mock notifier
           productSearchNotifierProvider.overrideWith((ref) => mockNotifier),
         ],
         child: MaterialApp(

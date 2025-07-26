@@ -9,8 +9,8 @@ import 'package:aura_app/features/ecommerce/presentation/notifiers/product_detai
 import 'package:aura_app/features/ecommerce/domain/entities/product.dart';
 import 'package:aura_app/core/providers/app_providers.dart';
 
-// Generate mock classes
-@GenerateMocks([ProductDetailNotifier])
+// Generate mock classes with nice defaults
+@GenerateNiceMocks([MockSpec<ProductDetailNotifier>()])
 import 'product_detail_screen_test.mocks.dart';
 
 void main() {
@@ -18,10 +18,11 @@ void main() {
 
   setUp(() {
     mockNotifier = MockProductDetailNotifier();
+    // Configure default state for mock notifier
+    when(mockNotifier.state).thenReturn(const ProductDetailState());
     // Stub the addListener method to prevent MissingStubError
     when(mockNotifier.addListener(any, fireImmediately: anyNamed('fireImmediately')))
         .thenReturn(() {});
-    when(mockNotifier.removeListener(any)).thenReturn(() {});
   });
 
   group('ProductDetailScreen Widget Tests', () {

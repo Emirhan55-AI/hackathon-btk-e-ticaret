@@ -45,10 +45,6 @@ class _FakeProductDetailState_0 extends _i1.SmartFake
 /// See the documentation for Mockito's code generation for more information.
 class MockProductDetailNotifier extends _i1.Mock
     implements _i3.ProductDetailNotifier {
-  MockProductDetailNotifier() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   set onError(_i4.ErrorListener? _onError) => super.noSuchMethod(
         Invocation.setter(
@@ -62,18 +58,24 @@ class MockProductDetailNotifier extends _i1.Mock
   bool get mounted => (super.noSuchMethod(
         Invocation.getter(#mounted),
         returnValue: false,
+        returnValueForMissingStub: false,
       ) as bool);
 
   @override
   _i5.Stream<_i2.ProductDetailState> get stream => (super.noSuchMethod(
         Invocation.getter(#stream),
         returnValue: _i5.Stream<_i2.ProductDetailState>.empty(),
+        returnValueForMissingStub: _i5.Stream<_i2.ProductDetailState>.empty(),
       ) as _i5.Stream<_i2.ProductDetailState>);
 
   @override
   _i2.ProductDetailState get state => (super.noSuchMethod(
         Invocation.getter(#state),
         returnValue: _FakeProductDetailState_0(
+          this,
+          Invocation.getter(#state),
+        ),
+        returnValueForMissingStub: _FakeProductDetailState_0(
           this,
           Invocation.getter(#state),
         ),
@@ -95,12 +97,17 @@ class MockProductDetailNotifier extends _i1.Mock
           this,
           Invocation.getter(#debugState),
         ),
+        returnValueForMissingStub: _FakeProductDetailState_0(
+          this,
+          Invocation.getter(#debugState),
+        ),
       ) as _i2.ProductDetailState);
 
   @override
   bool get hasListeners => (super.noSuchMethod(
         Invocation.getter(#hasListeners),
         returnValue: false,
+        returnValueForMissingStub: false,
       ) as bool);
 
   @override
@@ -225,6 +232,7 @@ class MockProductDetailNotifier extends _i1.Mock
           ],
         ),
         returnValue: false,
+        returnValueForMissingStub: false,
       ) as bool);
 
   @override
@@ -239,6 +247,7 @@ class MockProductDetailNotifier extends _i1.Mock
           {#fireImmediately: fireImmediately},
         ),
         returnValue: () {},
+        returnValueForMissingStub: () {},
       ) as _i4.RemoveListener);
 
   @override
