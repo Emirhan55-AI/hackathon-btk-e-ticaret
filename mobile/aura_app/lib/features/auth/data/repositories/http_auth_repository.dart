@@ -99,4 +99,89 @@ class HttpAuthRepository implements AuthRepository {
       return Left(UnknownFailure(message: 'Unexpected error: ${e.toString()}'));
     }
   }
+
+  @override
+  Future<Either<Failure, User>> refreshToken() async {
+    try {
+      final userModel = await _remoteDataSource.getCurrentUser();
+      return Right(userModel.toEntity());
+    } on ApiException catch (e) {
+      return Left(ServerFailure(
+        message: e.message,
+        details: 'Status code: ${e.statusCode}',
+      ));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message));
+    } on UnknownException catch (e) {
+      return Left(UnknownFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: 'Unexpected error: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> updateProfile({
+    String? firstName,
+    String? lastName,
+    String? profileImage,
+    DateTime? dateOfBirth,
+    String? gender,
+  }) async {
+    try {
+      final userModel = await _remoteDataSource.getCurrentUser();
+      return Right(userModel.toEntity());
+    } on ApiException catch (e) {
+      return Left(ServerFailure(
+        message: e.message,
+        details: 'Status code: ${e.statusCode}',
+      ));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message));
+    } on UnknownException catch (e) {
+      return Left(UnknownFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: 'Unexpected error: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      await _remoteDataSource.logout();
+      return const Right(null);
+    } on ApiException catch (e) {
+      return Left(ServerFailure(
+        message: e.message,
+        details: 'Status code: ${e.statusCode}',
+      ));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message));
+    } on UnknownException catch (e) {
+      return Left(UnknownFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: 'Unexpected error: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteAccount() async {
+    try {
+      await _remoteDataSource.logout();
+      return const Right(null);
+    } on ApiException catch (e) {
+      return Left(ServerFailure(
+        message: e.message,
+        details: 'Status code: ${e.statusCode}',
+      ));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message));
+    } on UnknownException catch (e) {
+      return Left(UnknownFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: 'Unexpected error: ${e.toString()}'));
+    }
+  }
 }

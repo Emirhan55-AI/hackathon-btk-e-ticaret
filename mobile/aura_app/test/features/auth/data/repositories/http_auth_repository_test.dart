@@ -61,7 +61,10 @@ void main() {
       final result = await repository.login(tEmail, tPassword);
 
       // assert
-      expect(result, equals(Left(ApiFailure('Invalid credentials'))));
+      expect(result, equals(Left(ServerFailure(
+        message: 'Invalid credentials',
+        details: 'Status code: 401',
+      ))));
       verify(mockRemoteDataSource.login(tEmail, tPassword));
       verifyNoMoreInteractions(mockRemoteDataSource);
     });
@@ -75,7 +78,7 @@ void main() {
       final result = await repository.login(tEmail, tPassword);
 
       // assert
-      expect(result, equals(Left(NetworkFailure('No internet connection'))));
+      expect(result, equals(Left(NetworkFailure(message: 'No internet connection'))));
       verify(mockRemoteDataSource.login(tEmail, tPassword));
       verifyNoMoreInteractions(mockRemoteDataSource);
     });
@@ -89,7 +92,7 @@ void main() {
       final result = await repository.login(tEmail, tPassword);
 
       // assert
-      expect(result, equals(Left(UnknownFailure('Unknown error'))));
+      expect(result, equals(Left(UnknownFailure(message: 'Unknown error'))));
       verify(mockRemoteDataSource.login(tEmail, tPassword));
       verifyNoMoreInteractions(mockRemoteDataSource);
     });
@@ -148,7 +151,10 @@ void main() {
       );
 
       // assert
-      expect(result, equals(Left(ApiFailure('Email already exists'))));
+      expect(result, equals(Left(ServerFailure(
+        message: 'Email already exists',
+        details: 'Status code: 400',
+      ))));
     });
   });
 
@@ -177,7 +183,10 @@ void main() {
       final result = await repository.logout();
 
       // assert
-      expect(result, equals(Left(ApiFailure('Logout failed'))));
+      expect(result, equals(Left(ServerFailure(
+        message: 'Logout failed',
+        details: 'Status code: 500',
+      ))));
     });
   });
 
@@ -206,7 +215,10 @@ void main() {
       final result = await repository.getCurrentUser();
 
       // assert
-      expect(result, equals(Left(ApiFailure('Unauthorized'))));
+      expect(result, equals(Left(ServerFailure(
+        message: 'Unauthorized',
+        details: 'Status code: 401',
+      ))));
     });
   });
 }
