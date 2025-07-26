@@ -34,6 +34,24 @@ class AuthException extends AppException {
   });
 }
 
+/// API related exceptions
+class ApiException extends AppException {
+  const ApiException({
+    required super.message,
+    super.details,
+    super.statusCode,
+  });
+}
+
+/// Unknown/Generic exceptions
+class UnknownException extends AppException {
+  const UnknownException({
+    required super.message,
+    super.details,
+    super.statusCode,
+  });
+}
+
 /// Server related exceptions
 class ServerException extends AppException {
   const ServerException({

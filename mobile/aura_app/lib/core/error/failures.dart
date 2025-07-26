@@ -49,6 +49,14 @@ class AuthFailure extends Failure {
   }) : super(message: message, details: details);
 }
 
+/// API related failures
+class ApiFailure extends Failure {
+  const ApiFailure({
+    required String message,
+    String? details,
+  }) : super(message: message, details: details);
+}
+
 /// Validation related failures
 class ValidationFailure extends Failure {
   const ValidationFailure({
