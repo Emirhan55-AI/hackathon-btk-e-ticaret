@@ -10,7 +10,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-# lib/  # Commented out for Flutter lib folders
+lib/
 lib64/
 parts/
 sdist/
@@ -71,8 +71,8 @@ ehthumbs.db
 Thumbs.db
 
 # Logs
-logs/
 *.log
+logs/
 
 # Database
 *.db
@@ -82,15 +82,25 @@ logs/
 # Docker
 .dockerignore
 
-# Environment variables
-.env
-.env.local
-.env.production
-
-# Alembic
-app/alembic/versions/*.py
-!app/alembic/versions/.gitkeep
-
 # Temporary files
-tmp/
+*.tmp
+*.temp
 temp/
+tmp/
+
+# Model files (if large)
+*.pkl
+*.joblib
+models/
+
+# Data files
+data/
+*.csv
+*.json
+*.xlsx
+
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
