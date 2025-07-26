@@ -1,0 +1,56 @@
+# Core dependencies for the Image Processing Service
+# This service analyzes clothing photos using computer vision and AI models
+
+# FastAPI - Modern, fast web framework for building APIs with Python
+fastapi>=0.104.0
+
+# Uvicorn - ASGI server for running FastAPI applications in production
+uvicorn[standard]>=0.24.0
+
+# Python multipart - Required for handling file uploads in FastAPI
+python-multipart>=0.0.6
+
+# Pillow - Python Imaging Library for basic image processing operations
+Pillow>=10.0.0
+
+# NumPy - Fundamental package for numerical computing, used by AI models
+numpy>=1.24.0
+
+# OpenCV - Computer vision library for image preprocessing
+opencv-python>=4.8.0
+
+# Requests - HTTP library for making API calls to other services
+requests>=2.31.0
+
+# Pydantic - Data validation and settings management using Python type annotations
+pydantic>=2.4.0
+
+# Python-dotenv - Load environment variables from .env file
+python-dotenv>=1.0.0
+
+# Phase 2: AI Models for Image Processing
+# PyTorch - Deep learning framework for neural networks
+torch>=2.0.0
+
+# TorchVision - Computer vision library with pre-trained models
+torchvision>=0.15.0
+
+# Detectron2 - Facebook's object detection and segmentation framework
+# Note: Install via: pip install 'git+https://github.com/facebookresearch/detectron2.git'
+# detectron2>=0.6
+
+# CLIP - OpenAI's Contrastive Language-Image Pre-training model
+# Install via: pip install git+https://github.com/openai/CLIP.git
+# clip-by-openai>=1.0
+
+# Transformers - Hugging Face library for transformer models including CLIP
+transformers>=4.35.0
+
+# Timm - PyTorch Image Models library for Vision Transformers
+timm>=0.9.0
+
+# Scikit-image - Image processing library for advanced operations
+scikit-image>=0.21.0
+
+# Matplotlib - For visualization and debugging
+matplotlib>=3.7.0

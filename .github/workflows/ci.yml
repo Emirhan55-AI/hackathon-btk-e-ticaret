@@ -1,0 +1,128 @@
+# GitHub Actions CI/CD workflow for the Aura AI system
+# This workflow automatically tests and validates code changes
+
+# Name of the workflow that appears in GitHub Actions interface
+name: Aura AI System CI/CD
+
+# Define when this workflow should run
+# It triggers on pushes and pull requests to the main branch
+on:
+  push:
+    branches: [ main ]  # Run when code is pushed to main branch
+  pull_request:
+    branches: [ main ]  # Run when pull requests are created targeting main
+
+# Define the jobs that this workflow will execute
+jobs:
+  # Job for testing the microservices
+  test:
+    # Use Ubuntu as the virtual machine environment
+    runs-on: ubuntu-latest
+    
+    # Define the sequence of steps for this job
+    steps:
+    # Step 1: Get the source code from the repository
+    - name: Check out repository code
+      uses: actions/checkout@v4  # GitHub action to download repository content
+    
+    # Step 2: Set up Python environment
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v4  # GitHub action to install Python
+      with:
+        python-version: '3.9'  # Specify Python version to use
+    
+    # Step 3: Install development dependencies
+    - name: Install development dependencies
+      run: |
+        # Upgrade pip to latest version for better dependency resolution
+        python -m pip install --upgrade pip
+        # Install development tools like pytest for testing
+        pip install -r requirements-dev.txt
+    
+    # Step 4: Test Image Processing Service as an example
+    - name: Test Image Processing Service
+      run: |
+        # Navigate to the image processing service directory
+        cd image_processing_service
+        # Install the service-specific dependencies
+        pip install -r requirements.txt
+        # Run the test suite using pytest
+        # -v flag provides verbose output showing each test result
+        # --tb=short provides concise error information if tests fail
+        pytest tests/ -v --tb=short
+    
+    # Step 5: Test NLU Service
+    - name: Test NLU Service
+      run: |
+        # Navigate to the NLU service directory
+        cd nlu_service
+        # Install the service-specific dependencies
+        pip install -r requirements.txt
+        # Run the test suite for NLU service
+        pytest tests/ -v --tb=short
+    
+    # Step 6: Test Style Profile Service
+    - name: Test Style Profile Service
+      run: |
+        # Navigate to the style profile service directory
+        cd style_profile_service
+        # Install the service-specific dependencies
+        pip install -r requirements.txt
+        # Run the test suite for style profile service
+        pytest tests/ -v --tb=short
+    
+    # Step 7: Test Combination Engine Service
+    - name: Test Combination Engine Service
+      run: |
+        # Navigate to the combination engine service directory
+        cd combination_engine_service
+        # Install the service-specific dependencies
+        pip install -r requirements.txt
+        # Run the test suite for combination engine service
+        pytest tests/ -v --tb=short
+    
+    # Step 8: Test Recommendation Engine Service
+    - name: Test Recommendation Engine Service
+      run: |
+        # Navigate to the recommendation engine service directory
+        cd recommendation_engine_service
+        # Install the service-specific dependencies
+        pip install -r requirements.txt
+        # Run the test suite for recommendation engine service
+        pytest tests/ -v --tb=short
+
+  # Job for Docker container builds (runs after tests pass)
+  build:
+    # Only run this job if the test job completes successfully
+    needs: test
+    # Use Ubuntu as the virtual machine environment
+    runs-on: ubuntu-latest
+    
+    # Define the build strategy to test all services
+    strategy:
+      matrix:
+        # List of services to build Docker containers for
+        service: [
+          image_processing_service,
+          nlu_service,
+          style_profile_service,
+          combination_engine_service,
+          recommendation_engine_service
+        ]
+    
+    # Steps for building Docker containers
+    steps:
+    # Step 1: Get the source code
+    - name: Check out repository code
+      uses: actions/checkout@v4
+    
+    # Step 2: Build Docker container for each service
+    - name: Build Docker image for ${{ matrix.service }}
+      run: |
+        # Navigate to the specific service directory
+        cd ${{ matrix.service }}
+        # Build a Docker image with a descriptive tag
+        # The tag includes the service name for identification
+        docker build -t aura-${{ matrix.service }}:latest .
+        # Display the built image information for verification
+        docker images aura-${{ matrix.service }}:latest
