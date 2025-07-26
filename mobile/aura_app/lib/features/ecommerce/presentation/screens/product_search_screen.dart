@@ -89,7 +89,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) => FilterBottomSheet(
-        currentFilter: ref.read(productSearchNotifierProvider).activeFilter,
+        currentFilter: ref.read(productSearchNotifierProvider).activeFilter ?? const ProductFilter(),
         onApplyFilter: (filter) {
           _notifier.applyFilter(filter);
           Navigator.pop(context);
@@ -107,7 +107,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
       builder: (context) => SortBottomSheet(
         currentSortBy: ref.read(productSearchNotifierProvider).activeFilter?.sortBy ?? ProductSortBy.relevance,
         currentSortOrder: ref.read(productSearchNotifierProvider).activeFilter?.sortOrder ?? SortOrder.asc,
-        onApplySort: (sortBy, sortOrder) {
+        onSortChanged: (sortBy, sortOrder) {
           final currentFilter = ref.read(productSearchNotifierProvider).activeFilter ?? const ProductFilter();
           final newFilter = currentFilter.copyWith(
             sortBy: sortBy,
