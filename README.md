@@ -1,36 +1,39 @@
-# Aura - Personal Style Assistant AI System
+# Aura AI + E-Commerce Platform - BTK Hackathon 2025 🚀
 
-## Overview
-Aura is a comprehensive AI-powered personal style assistant that helps users discover their style through photo analysis and receive personalized clothing recommendations. The system uses a microservices architecture with specialized AI models for different tasks.
+## 🎯 Project Overview
+This repository contains a complete **AI-powered e-commerce platform** that combines:
 
-## System Architecture
-The system consists of 5 independent microservices that communicate via REST APIs:
+### 🤖 Aura AI System (8-Phase Advanced AI)
+A comprehensive AI-powered personal style assistant with specialized microservices for advanced fashion intelligence and personalized recommendations.
 
-1. **ImageProcessingService** (Port 8001): Analyzes clothing photos using computer vision
-2. **NLU Service** (Port 8002) ✅ Phase 3 Complete
-   - **Advanced XLM-R Transformer**: Cross-lingual RoBERTa for multilingual understanding
-   - **Capabilities**: Intent classification, sentiment analysis, context detection across 5 languages
-   - **Features**: 768-dim XLM-R embeddings, semantic similarity, transformer ensemble
-   - **Performance**: GPU-accelerated processing with intelligent fallback
-   - **Status**: Production-ready with comprehensive multilingual analysis pipeline
-3. **StyleProfileService** (Port 8003) ✅ Phase 4 Complete
-   - **Enhanced AI Profiling**: Multi-modal style analysis using Phase 2+3 features
-   - **Capabilities**: ML clustering, temporal evolution, behavioral analytics, personalized insights
-   - **Features**: K-Means clustering, PCA reduction, FAISS similarity, comprehensive profiling
-   - **Performance**: Real-time profile analysis with confidence scoring and advanced algorithms
-   - **Status**: Production-ready with advanced multi-modal AI integration
-4. **CombinationEngineService** (Port 8004) ✅ Phase 5 Complete
-   - **Intelligent AI Combinations**: Multi-modal combination generation using Phase 2+4 features
-   - **Capabilities**: Visual compatibility analysis, style coherence, color harmony, context appropriateness
-   - **Features**: CLIP embeddings, graph algorithms, fashion expertise rules, ML optimization
-   - **Performance**: Real-time intelligent combinations with confidence scoring and detailed analysis
-   - **Status**: Production-ready with advanced multi-modal AI combination algorithms
-5. **RecommendationEngineService** (Port 8005) ✅ Phase 6 Complete
-   - **Enhanced FAISS Recommendation Engine**: Multi-modal AI-powered product recommendations
-   - **Capabilities**: FAISS similarity search, content-based/collaborative/hybrid strategies, style-aware matching
-   - **Features**: Ultra-fast product embeddings, multi-service integration (Phase 2+4+5), advanced personalization
-   - **Performance**: Real-time recommendations with < 100ms FAISS search, comprehensive analytics
-   - **Status**: Production-ready with advanced multi-modal AI recommendation algorithms
+### 🛒 E-Commerce Platform
+A full-stack e-commerce application with web backend, mobile Flutter app, and complete shopping functionality.
+
+## 🏗️ Combined System Architecture
+The unified platform integrates both AI capabilities and e-commerce functionality:
+
+### 🤖 Aura AI Microservices (Advanced AI Backend)
+1. **ImageProcessingService** (Port 8001): Computer vision for clothing analysis using ResNet-50, ViT, CLIP
+2. **NLU Service** (Port 8002): Multilingual natural language understanding with XLM-R transformer
+3. **StyleProfileService** (Port 8003): Advanced user style profiling with ML clustering and behavioral analytics
+4. **CombinationEngineService** (Port 8004): Intelligent outfit combinations using graph algorithms
+5. **RecommendationEngineService** (Port 8005): FAISS-powered product recommendations with multi-modal AI
+6. **OrchestrationService** (Port 8006): Advanced service coordination and workflow management
+7. **FeedbackLoopService** (Port 8007): Intelligent feedback processing and continuous learning
+
+### 🛒 E-Commerce Platform Components
+- **Web Backend** (FastAPI): Complete e-commerce API with authentication, cart, orders
+- **Mobile App** (Flutter): Cross-platform iOS/Android application
+- **Database** (PostgreSQL): Comprehensive data management
+- **Authentication**: JWT-based user management
+- **Payment Integration**: Ready for payment gateway integration
+
+### 🔗 Integration Features
+- **AI-Powered Recommendations**: E-commerce platform uses Aura AI for personalized product suggestions
+- **Style Analysis**: Mobile app integrates with AI services for clothing analysis
+- **Smart Search**: NLU service powers intelligent product search
+- **Personalized Shopping**: Style profiles enhance user experience
+- **Intelligent Combinations**: AI suggests outfit combinations from user's purchases
 
 ## Technologies Used
 - **Framework**: FastAPI (modern, fast Python web framework)
