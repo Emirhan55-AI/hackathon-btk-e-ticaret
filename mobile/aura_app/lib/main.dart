@@ -4,6 +4,7 @@ import 'bootstrap.dart';
 import 'core/constants/app_constants.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
+import 'core/providers/app_providers.dart';
 
 void main() async {
   // Initialize the app

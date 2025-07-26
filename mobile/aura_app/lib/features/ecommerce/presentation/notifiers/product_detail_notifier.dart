@@ -1,40 +1,40 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'product_detail_state.dart';
 import '../../domain/entities/product.dart';
-// TODO: Import when use case is implemented
-// import '../../domain/usecases/get_product_details.dart';
+import '../../domain/usecases/ecommerce_usecases.dart';
 
 /// Product detail notifier for managing product detail screen state
-/// TODO: Implement when GetProductDetails use case is available
-/*
 class ProductDetailNotifier extends StateNotifier<ProductDetailState> {
-  final GetProductDetails _getProductDetails;
+  final GetProductById _getProductById;
 
   ProductDetailNotifier({
-    required GetProductDetails getProductDetails,
-  })  : _getProductDetails = getProductDetails,
+    required GetProductById getProductById,
+  })  : _getProductById = getProductById,
         super(const ProductDetailState());
-*/
-
-/// Temporary mock implementation until use case is ready
-class ProductDetailNotifier extends StateNotifier<ProductDetailState> {
-  ProductDetailNotifier() : super(const ProductDetailState());
 
   /// Load product details by ID
   Future<void> loadProduct(String productId) async {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      // TODO: Replace with actual use case call
-      // final result = await _getProductDetails(productId);
+      final result = await _getProductById(GetProductByIdParams(productId: productId));
       
-      // Mock implementation - simulate loading
-      await Future.delayed(const Duration(milliseconds: 500));
-      
-      // For now, just set loading to false
-      state = state.copyWith(
-        isLoading: false,
-        error: 'Product loading not implemented yet',
+      result.fold(
+        (failure) {
+          state = state.copyWith(
+            isLoading: false,
+            error: failure.message,
+          );
+        },
+        (product) {
+          state = state.copyWith(
+            isLoading: false,
+            product: product,
+            selectedImageIndex: 0,
+            quantity: 1,
+            selectedVariants: {},
+          );
+        },
       );
     } catch (e) {
       state = state.copyWith(
@@ -142,8 +142,4 @@ class ProductDetailNotifier extends StateNotifier<ProductDetailState> {
   }
 }
 
-/// Provider for product detail notifier  
-final productDetailNotifierProvider = 
-    StateNotifierProvider<ProductDetailNotifier, ProductDetailState>((ref) {
-  return ProductDetailNotifier();
-});
+/// Provider for product detail notifier is defined in app_providers.dart

@@ -7,7 +7,7 @@ import '../widgets/variant_selector.dart';
 import '../widgets/rating_bar.dart';
 import '../../domain/entities/product.dart';
 import '../notifiers/product_detail_state.dart';
-import '../notifiers/product_detail_notifier.dart';
+import '../../../../core/providers/app_providers.dart';
 
 /// Product detail screen showing comprehensive product information
 class ProductDetailScreen extends ConsumerStatefulWidget {
@@ -35,11 +35,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     // Initialize with product if provided, otherwise load from API
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.product != null) {
-        // TODO: Uncomment when provider is available
-        // ref.read(productDetailNotifierProvider.notifier).setProduct(widget.product!);
+        ref.read(productDetailNotifierProvider.notifier).setProduct(widget.product!);
       } else {
-        // TODO: Uncomment when provider is available
-        // ref.read(productDetailNotifierProvider.notifier).loadProduct(widget.productId);
+        ref.read(productDetailNotifierProvider.notifier).loadProduct(widget.productId);
       }
     });
   }
@@ -52,11 +50,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Replace with actual provider when available
-    final state = ProductDetailState(
-      product: widget.product,
-      isLoading: false,
-    );
+    final state = ref.watch(productDetailNotifierProvider);
 
     return Scaffold(
       body: state.isLoading

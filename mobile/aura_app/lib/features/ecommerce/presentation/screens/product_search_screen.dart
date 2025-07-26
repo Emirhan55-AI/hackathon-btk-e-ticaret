@@ -7,6 +7,7 @@ import '../widgets/product_card.dart';
 import '../widgets/filter_bottom_sheet.dart';
 import '../widgets/sort_bottom_sheet.dart';
 import '../../domain/entities/product.dart';
+import '../../../../core/providers/app_providers.dart';
 
 /// Screen for searching and browsing products
 class ProductSearchScreen extends ConsumerStatefulWidget {
@@ -393,10 +394,3 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     );
   }
 }
-
-// Providers
-final productSearchNotifierProvider = 
-    StateNotifierProvider<ProductSearchNotifier, ProductSearchState>((ref) {
-  // TODO: Inject actual use cases from providers
-  throw UnimplementedError('ProductSearchNotifier provider not implemented');
-});
