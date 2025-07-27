@@ -23,17 +23,17 @@ numpy>=1.24.0
 # FAISS - Facebook AI Similarity Search for ultra-fast vector similarity
 faiss-cpu>=1.7.4
 
-# PyTorch - Deep learning framework for AI model inference
-torch>=2.0.0
+# PyTorch - Deep learning framework for AI model inference (compatible versions)
+torch==2.0.1
 
-# Torchvision - Computer vision utilities and pre-trained models
-torchvision>=0.15.0
+# Torchvision - Computer vision utilities and pre-trained models (compatible with PyTorch 2.0.1)
+torchvision==0.15.2
 
 # Transformers - Hugging Face transformers for advanced NLP models
 transformers>=4.35.0
 
-# CLIP - OpenAI's CLIP model for image-text understanding
-clip-by-openai>=1.0
+# CLIP - Image-text understanding (using transformers CLIP implementation)
+# clip-by-openai>=1.0  # Temporarily disabled due to PyTorch version conflicts
 
 # Scikit-learn - Machine learning algorithms for recommendation systems
 scikit-learn>=1.3.0

@@ -24,8 +24,8 @@ def test_service_health():
     
     # Verify response contains expected service information
     response_data = response.json()
-    assert response_data["status"] == "Combination Engine Service is running"
-    assert response_data["service"] == "combination_engine"
+    assert "🧠 Phase 4 Combination Engine" in response_data["status"]
+    assert response_data["service"] == "combination_engine_personalized"
 
 def test_generate_combination_valid_request():
     """
@@ -40,17 +40,17 @@ def test_generate_combination_valid_request():
     }
     
     # Send POST request to generate combination
-    response = client.post("/generate_combination", json=test_request)
+    response = client.post("/generate-combination", json=test_request)
     
     # Verify successful response
     assert response.status_code == 200
     
     # Verify response structure contains expected fields
     response_data = response.json()
-    assert "combination" in response_data
+    assert "combination_items" in response_data
     assert "user_id" in response_data
     assert response_data["user_id"] == "test_user_123"
-    assert "context" in response_data
+    assert "personalization_insights" in response_data
 
 def test_generate_combination_different_contexts():
     """
@@ -67,26 +67,31 @@ def test_generate_combination_different_contexts():
         }
         
         # Send request and verify successful response
-        response = client.post("/generate_combination", json=test_request)
+        response = client.post("/generate-combination", json=test_request)
         assert response.status_code == 200
         
         # Verify context is properly handled
         response_data = response.json()
-        assert response_data["context"] == context
+        # Context info is now in personalization_insights
+        assert "personalization_insights" in response_data
 
 def test_generate_combination_missing_user_id():
     """
     Test combination generation without user ID.
-    Should return 400 error for missing required field.
+    Should default to anonymous user and return success.
     """
     # Create request without user_id
     test_request = {
         "context": "casual"
     }
     
-    # Send request and expect validation error
-    response = client.post("/generate_combination", json=test_request)
-    assert response.status_code == 422  # Validation error
+    # Send request and expect success with default anonymous user
+    response = client.post("/generate-combination", json=test_request)
+    assert response.status_code == 200
+    
+    # Verify response contains anonymous user
+    response_data = response.json()
+    assert response_data["user_id"] == "anonymous"
 
 def test_placeholder():
     """

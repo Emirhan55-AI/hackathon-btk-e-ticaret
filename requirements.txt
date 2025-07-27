@@ -20,8 +20,8 @@ python-dotenv==1.0.0
 pydantic-settings==2.0.3
 email-validator==2.1.0
 
-# Dependency Injection (commented out due to build issues)
-# dependency-injector==4.41.0
+# Dependency Injection
+dependency-injector==4.41.0
 
 # JSON logging (optional)
 python-json-logger==2.0.7

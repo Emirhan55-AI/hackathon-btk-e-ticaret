@@ -63,8 +63,9 @@ COPY main.py .
 COPY phase8_demo.py .
 COPY test_phase8_feedback.py .
 
-# Copy any additional configuration files if they exist
-COPY *.md ./docs/ 2>/dev/null || true
+# Create docs directory and copy any documentation files if they exist
+# Using shell command to handle optional file copying gracefully
+RUN mkdir -p ./docs && (cp *.md ./docs/ 2>/dev/null || true)
 
 # Set proper ownership of application files
 # Ensure the aura user owns all application files

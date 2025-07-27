@@ -21,9 +21,9 @@ regex>=2023.8.8
 
 # Phase 3: AI/ML Dependencies for Advanced NLU
 # XLM-R and transformer models for multilingual understanding
-transformers>=4.35.0      # Hugging Face transformers library for XLM-R
-torch>=2.0.0              # PyTorch deep learning framework for model inference
-tokenizers>=0.14.0        # Fast tokenizers for transformer models
+transformers>=4.35.0,<4.37.0  # Hugging Face transformers library for XLM-R (compatible version)
+torch>=2.1.0,<2.3.0           # PyTorch deep learning framework for model inference (latest stable)
+tokenizers>=0.14.0            # Fast tokenizers for transformer models
 sentence-transformers>=2.2.0  # Sentence embeddings for semantic analysis
 
 # Advanced NLP utilities

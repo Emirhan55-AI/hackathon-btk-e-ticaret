@@ -1,0 +1,53 @@
+
+================================================================================
+🧪 AURA AI SİSTEMİ - KAPSAMLI TEST RAPORU
+================================================================================
+📅 Test Tarihi: 2025-07-26 17:15:50
+⏱️ Toplam Süre: 6532.43ms
+🎯 Genel Durum: WARNING
+
+📊 TEST PAKETLERİ ÖZET:
+--------------------------------------------------------------------------------
+❌ Unit Tests: FAILED
+   ⏱️ Süre: 1518.41ms
+❌ Integration Tests: FAILED
+   ⏱️ Süre: 1555.52ms
+❌ E2E Tests: FAILED
+   ⏱️ Süre: 1462.02ms
+✅ Fault Tolerance Tests: PASSED
+   ⏱️ Süre: 1501.95ms
+⚠️ Performance Tests: WARNING
+   ⏱️ Süre: 0.01ms
+
+--------------------------------------------------------------------------------
+📋 DETAYLI SONUÇLAR:
+--------------------------------------------------------------------------------
+
+🔍 Unit Tests:
+   ✅ Başarılı
+
+🔍 Integration Tests:
+   ✅ Başarılı
+
+🔍 E2E Tests:
+   ✅ Başarılı
+
+🔍 Fault Tolerance Tests:
+   ✅ Başarılı
+
+🔍 Performance Tests:
+   ⚠️ orchestrator_service ortalama yanıt süresi yüksek: 2456ms
+
+💡 ÖNERİLER:
+--------------------------------------------------------------------------------
+1. Performans sorunları için mikroservis kaynaklarını artırın
+2. Caching stratejileri uygulayın
+3. Monitoring ve alerting sistemleri kurarak production'da izleme yapın
+4. Load testing ile yüksek trafikli senaryoları test edin
+5. Security testleri ekleyerek güvenlik açıklarını kontrol edin
+6. A/B testing ile AI model performansını sürekli iyileştirin
+
+================================================================================
+⚠️ TESTLER TAMAMLANDI ANCAK UYARILAR VAR
+🔧 Belirtilen sorunları çözmeniz önerilir.
+================================================================================
