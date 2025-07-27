@@ -14,7 +14,8 @@ python-multipart>=0.0.6
 Pillow>=10.0.0
 
 # NumPy - Fundamental package for numerical computing, used by AI models
-numpy>=1.24.0
+# Fixed to 1.x for PyTorch compatibility (Phase 2 AI Enhancement)
+numpy>=1.24.0,<2.0.0
 
 # OpenCV - Computer vision library for image preprocessing
 opencv-python>=4.8.0
@@ -28,12 +29,12 @@ pydantic>=2.4.0
 # Python-dotenv - Load environment variables from .env file
 python-dotenv>=1.0.0
 
-# Phase 2: AI Models for Image Processing
-# PyTorch - Deep learning framework for neural networks
-torch>=2.0.0
+# Phase 2: AI Models for Image Processing - ENHANCED & STABILIZED
+# PyTorch - Deep learning framework for neural networks (stable version for production)
+torch>=2.1.0,<2.4.0
 
-# TorchVision - Computer vision library with pre-trained models
-torchvision>=0.15.0
+# TorchVision - Computer vision library with pre-trained models (compatible with PyTorch)
+torchvision>=0.16.0,<0.19.0
 
 # Advanced Computer Vision Detection System
 # Implemented using state-of-the-art computer vision algorithms

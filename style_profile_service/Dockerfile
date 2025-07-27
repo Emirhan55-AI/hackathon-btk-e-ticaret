@@ -6,6 +6,17 @@ FROM python:3.9-slim
 # All commands will execute from this location inside the container
 WORKDIR /app
 
+# Install system dependencies required for compiling Python packages  
+# gcc, g++: C/C++ compilers needed for packages like scikit-learn
+# python3-dev: Python development headers needed for compilation
+# build-essential: Essential build tools and libraries
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    python3-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy requirements file before other code for better caching
 # Docker can reuse this layer if dependencies haven't changed
 COPY requirements.txt .
@@ -20,12 +31,12 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # This includes main.py and any supporting Python files
 COPY . .
 
-# Expose port 8000 for the FastAPI service
+# Expose port 8003 for the FastAPI service
 # This documents which port the container uses
-EXPOSE 8000
+EXPOSE 8003
 
 # Define the command to start the service when container runs
 # uvicorn is the ASGI server that hosts our FastAPI application
 # --host 0.0.0.0 allows connections from outside the container
-# --port 8000 binds to the exposed port
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# --port 8003 binds to the exposed port
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003"]

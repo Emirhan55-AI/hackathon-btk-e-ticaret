@@ -103,14 +103,19 @@ class AuraOrchestrator:
         """
         logger.info("Initializing Aura Service Orchestration Engine - Phase 7")
         
-        # Service endpoint configuration
+        # Service endpoint configuration for Docker Compose environment
+        # Uses container hostnames for internal service communication
         self.service_endpoints = {
-            ServiceType.IMAGE_PROCESSING: "http://localhost:8001",
-            ServiceType.NLU_SERVICE: "http://localhost:8002",
-            ServiceType.STYLE_PROFILE: "http://localhost:8003",
-            ServiceType.COMBINATION_ENGINE: "http://localhost:8004",
-            ServiceType.RECOMMENDATION_ENGINE: "http://localhost:8005"
+            ServiceType.IMAGE_PROCESSING: "http://image-processing-service:8001",
+            ServiceType.NLU_SERVICE: "http://nlu-service:8002",
+            ServiceType.STYLE_PROFILE: "http://style-profile-service:8003",
+            ServiceType.COMBINATION_ENGINE: "http://combination-engine-service:8004",
+            ServiceType.RECOMMENDATION_ENGINE: "http://recommendation-engine-service:8005"
         }
+        
+        # E-commerce backend integration
+        self.ecommerce_backend_url = "http://backend:8000"
+        self.feedback_service_url = "http://feedback-loop-service:8007"
         
         # Active workflows tracking
         self.active_workflows: Dict[str, Workflow] = {}
