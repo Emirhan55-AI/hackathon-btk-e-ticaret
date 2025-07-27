@@ -96,3 +96,19 @@ class StorageFailure extends Failure {
     String? details,
   }) : super(message: message, details: details);
 }
+
+/// Data parsing related failures
+class DataParsingFailure extends Failure {
+  const DataParsingFailure({
+    required String message,
+    String? details,
+  }) : super(message: message, details: details);
+}
+
+/// Unexpected/general failures
+class UnexpectedFailure extends Failure {
+  const UnexpectedFailure({
+    required String message,
+    String? details,
+  }) : super(message: message, details: details);
+}

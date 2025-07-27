@@ -49,8 +49,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       } else {
         // Handle API errors
         final errorData = _parseErrorResponse(response);
-        final errorMessage = errorData['detail'] ?? 
-                           errorData['message'] ?? 
+        final errorMessage = (errorData['detail'] as String?) ?? 
+                           (errorData['message'] as String?) ?? 
                            'Login failed';
         
         throw ApiException(
@@ -107,8 +107,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         return UserModel.fromJson(userJson);
       } else {
         final errorData = _parseErrorResponse(response);
-        final errorMessage = errorData['detail'] ?? 
-                           errorData['message'] ?? 
+        final errorMessage = (errorData['detail'] as String?) ?? 
+                           (errorData['message'] as String?) ?? 
                            'Registration failed';
         
         throw ApiException(
@@ -146,8 +146,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       if (response.statusCode != 200 && response.statusCode != 204) {
         final errorData = _parseErrorResponse(response);
-        final errorMessage = errorData['detail'] ?? 
-                           errorData['message'] ?? 
+        final errorMessage = (errorData['detail'] as String?) ?? 
+                           (errorData['message'] as String?) ?? 
                            'Logout failed';
         
         throw ApiException(
@@ -182,8 +182,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         return UserModel.fromJson(data);
       } else {
         final errorData = _parseErrorResponse(response);
-        final errorMessage = errorData['detail'] ?? 
-                           errorData['message'] ?? 
+        final errorMessage = (errorData['detail'] as String?) ?? 
+                           (errorData['message'] as String?) ?? 
                            'Failed to get user data';
         
         throw ApiException(
@@ -229,8 +229,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         return UserModel.fromJson(userJson);
       } else {
         final errorData = _parseErrorResponse(response);
-        final errorMessage = errorData['detail'] ?? 
-                           errorData['message'] ?? 
+        final errorMessage = (errorData['detail'] as String?) ?? 
+                           (errorData['message'] as String?) ?? 
                            'Token refresh failed';
         
         throw ApiException(
@@ -285,8 +285,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         return UserModel.fromJson(data);
       } else {
         final errorData = _parseErrorResponse(response);
-        final errorMessage = errorData['detail'] ?? 
-                           errorData['message'] ?? 
+        final errorMessage = (errorData['detail'] as String?) ?? 
+                           (errorData['message'] as String?) ?? 
                            'Profile update failed';
         
         throw ApiException(
@@ -331,8 +331,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       if (response.statusCode != 200 && response.statusCode != 204) {
         final errorData = _parseErrorResponse(response);
-        final errorMessage = errorData['detail'] ?? 
-                           errorData['message'] ?? 
+        final errorMessage = (errorData['detail'] as String?) ?? 
+                           (errorData['message'] as String?) ?? 
                            'Password change failed';
         
         throw ApiException(
@@ -364,8 +364,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       if (response.statusCode != 200 && response.statusCode != 204) {
         final errorData = _parseErrorResponse(response);
-        final errorMessage = errorData['detail'] ?? 
-                           errorData['message'] ?? 
+        final errorMessage = (errorData['detail'] as String?) ?? 
+                           (errorData['message'] as String?) ?? 
                            'Account deletion failed';
         
         throw ApiException(

@@ -1,0 +1,11 @@
+targets:
+  $default:
+    builders:
+      mockito:mockBuilder:
+        enabled: false
+      freezed:
+        enabled: true
+      riverpod_generator:
+        enabled: true
+      json_serializable:
+        enabled: true

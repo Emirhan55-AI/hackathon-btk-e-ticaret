@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_constants.dart';
 
-/// Application theme configuration
+/// Application theme configuration with Montserrat typography using Google Fonts
+/// This class provides both light and dark theme configurations with sophisticated design
 class AppTheme {
-  /// Light theme
+  /// Light theme with sophisticated design and Montserrat font from Google Fonts
+  /// Uses Material Design 3 principles with custom color scheme and typography
   static ThemeData get lightTheme {
     return ThemeData(
-      // Color scheme
+      // Use Google Fonts Montserrat as the default font family - automatically downloads fonts
+      textTheme: GoogleFonts.montserratTextTheme(),
+      
+      // Color scheme for light mode with custom brand colors
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         primaryContainer: AppColors.primaryLight,
@@ -23,84 +29,75 @@ class AppTheme {
         onError: AppColors.white,
       ),
 
-      // App bar theme
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.white,
+      // App bar theme with sophisticated styling
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.textPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: TextStyle(
-          fontSize: 20,
+        titleTextStyle: GoogleFonts.montserrat(
+          fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: AppColors.white,
-        ),
-        iconTheme: IconThemeData(
-          color: AppColors.white,
+          color: AppColors.textPrimary,
         ),
       ),
 
-      // Elevated button theme
+      // Elevated button theme with Montserrat font
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.white,
           elevation: 2,
-          shadowColor: AppColors.primaryTransparent,
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
           ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppConstants.largePadding,
-            vertical: AppConstants.defaultPadding,
-          ),
-          textStyle: const TextStyle(
+          textStyle: GoogleFonts.montserrat(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
 
-      // Outlined button theme
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primary,
-          side: const BorderSide(color: AppColors.primary, width: 1.5),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppConstants.largePadding,
-            vertical: AppConstants.defaultPadding,
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-
-      // Text button theme
+      // Text button theme with Montserrat font
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
-          textStyle: const TextStyle(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          textStyle: GoogleFonts.montserrat(
             fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
         ),
       ),
 
-      // Input decoration theme
+      // Outlined button theme with Montserrat font
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primary,
+          side: const BorderSide(color: AppColors.primary),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+          ),
+          textStyle: GoogleFonts.montserrat(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+
+      // Input decoration theme with sophisticated styling
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceVariant,
+        fillColor: AppColors.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(color: AppColors.greyLight),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-          borderSide: const BorderSide(color: AppColors.greyLight, width: 1),
+          borderSide: const BorderSide(color: AppColors.greyLight),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
@@ -108,35 +105,27 @@ class AppTheme {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-          borderSide: const BorderSide(color: AppColors.error, width: 1),
+          borderSide: const BorderSide(color: AppColors.error),
         ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-          borderSide: const BorderSide(color: AppColors.error, width: 2),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppConstants.defaultPadding,
-          vertical: AppConstants.defaultPadding,
-        ),
-        hintStyle: const TextStyle(
+        contentPadding: const EdgeInsets.all(16),
+        hintStyle: GoogleFonts.montserrat(
           color: AppColors.textSecondary,
           fontSize: 16,
         ),
-        labelStyle: const TextStyle(
+        labelStyle: GoogleFonts.montserrat(
           color: AppColors.textSecondary,
           fontSize: 16,
         ),
       ),
 
-      // Card theme
-      cardTheme: const CardThemeData(
+      // Card theme with rounded corners and elevation
+      cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: 2,
-        shadowColor: AppColors.blackTransparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(AppConstants.borderRadius)),
+          borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         ),
-        margin: EdgeInsets.all(AppConstants.smallPadding),
+        margin: const EdgeInsets.all(8),
       ),
 
       // Floating action button theme
@@ -144,172 +133,100 @@ class AppTheme {
         backgroundColor: AppColors.accent,
         foregroundColor: AppColors.white,
         elevation: 4,
-        shape: CircleBorder(),
       ),
 
-      // Bottom navigation bar theme
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      // Bottom navigation bar theme with Montserrat font
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.surface,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textSecondary,
-        elevation: 8,
+        selectedLabelStyle: GoogleFonts.montserrat(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+        unselectedLabelStyle: GoogleFonts.montserrat(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+        ),
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
-        ),
-        unselectedLabelStyle: TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 12,
-        ),
+        elevation: 8,
       ),
 
-      // Text theme
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
-        ),
-        displayMedium: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
-        ),
-        displaySmall: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
-        ),
-        headlineLarge: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
-        ),
-        headlineMedium: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
-        ),
-        headlineSmall: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
-        ),
-        titleLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
-        ),
-        titleMedium: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: AppColors.textPrimary,
-        ),
-        titleSmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: AppColors.textPrimary,
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.normal,
-          color: AppColors.textPrimary,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.normal,
-          color: AppColors.textPrimary,
-        ),
-        bodySmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.normal,
-          color: AppColors.textSecondary,
-        ),
-        labelLarge: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: AppColors.textPrimary,
-        ),
-        labelMedium: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: AppColors.textSecondary,
-        ),
-        labelSmall: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w500,
-          color: AppColors.textSecondary,
-        ),
-      ),
-
-      // Icon theme
+      // Icon theme configuration
       iconTheme: const IconThemeData(
         color: AppColors.textPrimary,
         size: 24,
       ),
 
-      // Divider theme
+      // Primary icon theme configuration
+      primaryIconTheme: const IconThemeData(
+        color: AppColors.white,
+        size: 24,
+      ),
+
+      // Divider theme for separation elements
       dividerTheme: const DividerThemeData(
         color: AppColors.greyLight,
         thickness: 1,
         space: 1,
       ),
 
-      // Chip theme
+      // Chip theme with Montserrat font
       chipTheme: ChipThemeData(
-        backgroundColor: AppColors.surfaceVariant,
-        selectedColor: AppColors.primary,
-        labelStyle: const TextStyle(
-          color: AppColors.textPrimary,
+        backgroundColor: AppColors.surface,
+        selectedColor: AppColors.primaryLight,
+        labelStyle: GoogleFonts.montserrat(
           fontSize: 14,
+          fontWeight: FontWeight.w500,
         ),
-        side: const BorderSide(color: AppColors.greyLight),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.largeBorderRadius),
+          borderRadius: BorderRadius.circular(20),
         ),
       ),
 
-      // Switch theme
-      switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return AppColors.primary;
-          }
-          return AppColors.grey;
-        }),
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return AppColors.primaryLight;
-          }
-          return AppColors.greyLight;
-        }),
+      // Enable Material Design 3 for modern styling
+      useMaterial3: true,
+    );
+  }
+
+  /// Dark theme with sophisticated design and Montserrat font from Google Fonts
+  /// Provides a consistent dark mode experience with proper contrast ratios
+  static ThemeData get darkTheme {
+    return ThemeData(
+      // Use Google Fonts Montserrat for dark theme - applies to dark text styles
+      textTheme: GoogleFonts.montserratTextTheme(ThemeData.dark().textTheme),
+      
+      // Color scheme for dark mode with appropriate contrast
+      colorScheme: const ColorScheme.dark(
+        primary: AppColors.primary,
+        primaryContainer: AppColors.primaryDark,
+        secondary: AppColors.accent,
+        secondaryContainer: AppColors.accentDark,
+        surface: Color(0xFF1E1E1E),
+        background: Color(0xFF121212),
+        error: AppColors.error,
+        onPrimary: AppColors.white,
+        onSecondary: AppColors.white,
+        onSurface: AppColors.white,
+        onBackground: AppColors.white,
+        onError: AppColors.white,
       ),
 
-      // Progress indicator theme
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: AppColors.primary,
-        linearTrackColor: AppColors.greyLight,
-        circularTrackColor: AppColors.greyLight,
-      ),
-
-      // Snackbar theme
-      snackBarTheme: const SnackBarThemeData(
-        backgroundColor: AppColors.textPrimary,
-        contentTextStyle: TextStyle(
+      // App bar theme for dark mode
+      appBarTheme: AppBarTheme(
+        backgroundColor: const Color(0xFF1E1E1E),
+        foregroundColor: AppColors.white,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: GoogleFonts.montserrat(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
           color: AppColors.white,
-          fontSize: 14,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(AppConstants.borderRadius),
-            topRight: Radius.circular(AppConstants.borderRadius),
-          ),
-        ),
-        behavior: SnackBarBehavior.floating,
       ),
 
-      // Material design version
+      // Enable Material Design 3 for dark theme
       useMaterial3: true,
     );
   }

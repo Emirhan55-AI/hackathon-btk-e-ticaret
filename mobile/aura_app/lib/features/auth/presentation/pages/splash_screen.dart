@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/widgets/lottie_animations.dart';
 
 /// Simple splash screen while we complete Phase 2
 class SplashScreen extends StatelessWidget {
@@ -72,17 +73,8 @@ class SplashScreen extends StatelessWidget {
               ),
               const SizedBox(height: 64),
               
-              // Loading Indicator
-              SizedBox(
-                width: 40,
-                height: 40,
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.white.withOpacity(0.8),
-                  ),
-                  strokeWidth: 3,
-                ),
-              ),
+              // Loading Animation
+              LottieAnimations.loading(),
               const SizedBox(height: 16),
               
               // Loading Text

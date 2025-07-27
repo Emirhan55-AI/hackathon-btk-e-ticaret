@@ -14,7 +14,7 @@ from app.core.exceptions import (
     general_exception_handler
 )
 from app.core.database import init_database
-# from app.core.di import setup_container
+from app.core.di import setup_container
 
 logger = logging.getLogger("app.main")
 
@@ -33,8 +33,8 @@ async def lifespan(app: FastAPI):
         database = init_database(settings.database_url)
         await database.connect()
         
-        # Setup dependency injection (disabled for now)
-        # setup_container()
+        # Setup dependency injection
+        setup_container()
         
         # Check external services (AI service health check)
         await check_external_services()

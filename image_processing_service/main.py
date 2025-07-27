@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 # This object handles all the API routes and requests for the Image Processing Service
 app = FastAPI(
     title="Aura Image Processing Service",  # Service name shown in API docs
-    description="Analyzes clothing photos using advanced AI models (Detectron2, CLIP, ResNet-50, ViT)",  # Enhanced description
+    description="Analyzes clothing photos using advanced AI models (Advanced CV Detection, CLIP, ResNet-50, ViT)",  # Enhanced description
     version="2.0.0"  # Updated version for Phase 2
 )
 
@@ -92,7 +92,7 @@ async def analyze_image(file: UploadFile = File(...)):
     
     Returns:
         JSON response containing detailed analysis results including:
-        - Detected clothing items (when Detectron2 is integrated)
+        - Detected clothing items using advanced computer vision algorithms
         - Style attributes (casual, formal, sporty, etc.)
         - Color analysis (dominant colors and color distribution)
         - Pattern recognition (solid, striped, floral, etc.)
@@ -144,8 +144,8 @@ async def analyze_image(file: UploadFile = File(...)):
                 "model_info": {
                     "feature_extractors": ["ResNet-50", "Vision Transformer (ViT)"],
                     "embedding_model": "CLIP (openai/clip-vit-base-patch32)",
-                    "detection_model": "Detectron2 (pending integration)",
-                    "total_models": 3
+                    "detection_model": "Advanced Computer Vision Detection System",
+                    "total_models": 4
                 },
                 "performance_notes": [
                     "Analysis includes deep learning-based feature extraction",
@@ -219,3 +219,9 @@ async def analyze_image(file: UploadFile = File(...)):
             status_code=500, 
             detail=f"Error processing image: {str(e)}"
         )
+
+# Run the server when this file is executed directly
+if __name__ == "__main__":
+    import uvicorn
+    logger.info("Starting Aura Image Processing Service...")
+    uvicorn.run(app, host="0.0.0.0", port=8001)

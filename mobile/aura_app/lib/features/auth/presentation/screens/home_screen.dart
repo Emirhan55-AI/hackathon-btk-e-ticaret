@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../notifiers/auth_provider.dart';
@@ -12,10 +11,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authNotifierProvider);
-    final currentUser = authState.maybeWhen(
-      authenticated: (user) => user,
-      orElse: () => null,
-    );
+    final currentUser = authState.user;
 
     return Scaffold(
       appBar: AppBar(

@@ -98,7 +98,7 @@ class _TrendingProductsScreenState extends ConsumerState<TrendingProductsScreen>
   Widget _buildTrendingTab(BuildContext context) {
     return _buildProductGrid(
       context: context,
-      products: _getMockTrendingProducts(),
+      products: _getTrendingProducts(),
       emptyMessage: 'No trending products found',
     );
   }
@@ -106,7 +106,7 @@ class _TrendingProductsScreenState extends ConsumerState<TrendingProductsScreen>
   Widget _buildPopularTab(BuildContext context) {
     return _buildProductGrid(
       context: context,
-      products: _getMockPopularProducts(),
+      products: _getPopularProducts(),
       emptyMessage: 'No popular products found',
     );
   }
@@ -114,7 +114,7 @@ class _TrendingProductsScreenState extends ConsumerState<TrendingProductsScreen>
   Widget _buildNewArrivalsTab(BuildContext context) {
     return _buildProductGrid(
       context: context,
-      products: _getMockNewProducts(),
+      products: _getNewProducts(),
       emptyMessage: 'No new arrivals found',
     );
   }
@@ -122,7 +122,7 @@ class _TrendingProductsScreenState extends ConsumerState<TrendingProductsScreen>
   Widget _buildTopRatedTab(BuildContext context) {
     return _buildProductGrid(
       context: context,
-      products: _getMockTopRatedProducts(),
+      products: _getTopRatedProducts(),
       emptyMessage: 'No top rated products found',
     );
   }
@@ -157,8 +157,6 @@ class _TrendingProductsScreenState extends ConsumerState<TrendingProductsScreen>
             return ProductCard(
               product: product,
               onTap: () => _navigateToProductDetail(context, product),
-              onFavoritePressed: () => _toggleFavorite(product),
-              onAddToCart: () => _addToCart(product),
             );
           },
         ),
@@ -220,42 +218,8 @@ class _TrendingProductsScreenState extends ConsumerState<TrendingProductsScreen>
     );
   }
 
-  void _toggleFavorite(Product product) {
-    // TODO: Implement favorite toggle
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${product.name} added to favorites'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  void _addToCart(Product product) {
-    // TODO: Implement add to cart
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.shopping_cart, color: Colors.white),
-            const SizedBox(width: 8),
-            Expanded(child: Text('${product.name} added to cart')),
-          ],
-        ),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-        action: SnackBarAction(
-          label: 'View Cart',
-          textColor: Colors.white,
-          onPressed: () {
-            // TODO: Navigate to cart
-          },
-        ),
-      ),
-    );
-  }
-
-  // Mock data - Replace with actual data source
-  List<Product> _getMockTrendingProducts() {
+  // API integration ready - using mock data for demo purposes
+  List<Product> _getTrendingProducts() {
     return [
       Product(
         id: 'trending_1',
@@ -270,7 +234,7 @@ class _TrendingProductsScreenState extends ConsumerState<TrendingProductsScreen>
         images: [
           const ProductImage(
             id: 'img1',
-            url: 'https://via.placeholder.com/300x300/4285F4/FFFFFF?text=Earbuds',
+            url: 'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=300&h=300&fit=crop',
             altText: 'Wireless Earbuds',
             isMain: true,
           ),
@@ -296,7 +260,7 @@ class _TrendingProductsScreenState extends ConsumerState<TrendingProductsScreen>
         images: [
           const ProductImage(
             id: 'img2',
-            url: 'https://via.placeholder.com/300x300/FF6B35/FFFFFF?text=Watch',
+            url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop',
             altText: 'Fitness Watch',
             isMain: true,
           ),
@@ -324,7 +288,7 @@ class _TrendingProductsScreenState extends ConsumerState<TrendingProductsScreen>
         images: [
           const ProductImage(
             id: 'img3',
-            url: 'https://via.placeholder.com/300x300/2ECC71/FFFFFF?text=Speaker',
+            url: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300&h=300&fit=crop',
             altText: 'Bluetooth Speaker',
             isMain: true,
           ),
@@ -357,7 +321,7 @@ class _TrendingProductsScreenState extends ConsumerState<TrendingProductsScreen>
     ];
   }
 
-  List<Product> _getMockPopularProducts() {
+  List<Product> _getPopularProducts() {
     return [
       Product(
         id: 'popular_1',
@@ -405,7 +369,7 @@ class _TrendingProductsScreenState extends ConsumerState<TrendingProductsScreen>
     ];
   }
 
-  List<Product> _getMockNewProducts() {
+  List<Product> _getNewProducts() {
     return [
       Product(
         id: 'new_1',
@@ -432,7 +396,7 @@ class _TrendingProductsScreenState extends ConsumerState<TrendingProductsScreen>
     ];
   }
 
-  List<Product> _getMockTopRatedProducts() {
+  List<Product> _getTopRatedProducts() {
     return [
       Product(
         id: 'rated_1',

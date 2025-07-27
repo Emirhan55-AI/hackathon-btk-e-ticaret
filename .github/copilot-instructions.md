@@ -57,3 +57,7 @@ All services follow this pattern:
 - Pydantic models for request/response validation
 - Comprehensive error handling with appropriate HTTP status codes
 - Detailed response messages with processing information
+
+
+
+Her zaman terminalde powershell syntax kullanarak çalıştır

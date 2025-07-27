@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     ai_service_url: str = Field(default="http://localhost:8001", alias="AI_SERVICE_URL")
     ai_service_api_key: str = Field(default="dev_key", alias="AI_SERVICE_API_KEY")
     
+    # E-commerce Integration
+    ecommerce_api_url: str = Field(default="http://localhost:8005", alias="ECOMMERCE_API_URL")
+    ecommerce_api_key: str = Field(default="dev_ecommerce_key", alias="ECOMMERCE_API_KEY")
+    
     # Environment
     environment: str = Field(default="development", alias="ENVIRONMENT")
     

@@ -156,6 +156,43 @@ class ApiClient {
     }
   }
 
+  /// PATCH request
+  Future<Map<String, dynamic>> patch(
+    String endpoint, {
+    Map<String, dynamic>? body,
+    bool requiresAuth = true,
+  }) async {
+    try {
+      final uri = _buildUri(endpoint);
+      final headers = await _buildHeaders(requiresAuth);
+
+      final response = await _client
+          .patch(
+            uri,
+            headers: headers,
+            body: body != null ? jsonEncode(body) : null,
+          )
+          .timeout(ApiConstants.connectionTimeout);
+
+      return _handleResponse(response);
+    } on SocketException {
+      throw const NetworkException(
+        message: 'No internet connection',
+        details: 'Please check your network connection and try again',
+      );
+    } on HttpException catch (e) {
+      throw NetworkException(
+        message: 'Network error occurred',
+        details: e.message,
+      );
+    } catch (e) {
+      throw NetworkException(
+        message: 'Unexpected error occurred',
+        details: e.toString(),
+      );
+    }
+  }
+
   /// Upload multipart request (for images)
   Future<Map<String, dynamic>> uploadMultipart(
     String endpoint,

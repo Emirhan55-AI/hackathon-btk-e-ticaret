@@ -1,64 +1,111 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/product.dart';
-import 'rating_bar.dart';
+import '../providers/cart_notifier.dart';
+import '../providers/favorites_notifier.dart';
 
-/// A card widget to display product information in lists and grids
-class ProductCard extends StatelessWidget {
+class ProductCard extends ConsumerWidget {
   final Product product;
   final VoidCallback? onTap;
-  final VoidCallback? onFavoritePressed;
-  final bool isFavorite;
-  final bool showAddToCart;
-  final VoidCallback? onAddToCart;
+  final bool showFavoriteButton;
 
   const ProductCard({
     super.key,
     required this.product,
     this.onTap,
-    this.onFavoritePressed,
-    this.isFavorite = false,
-    this.showAddToCart = true,
-    this.onAddToCart,
+    this.showFavoriteButton = true,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+    final favorites = ref.watch(favoritesNotifierProvider);
+    final isFavorite = favorites.contains(product.id);
+
     return Card(
       clipBehavior: Clip.antiAlias,
       elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product Image
+            // Product Image Section
             Expanded(
               flex: 3,
               child: Stack(
                 children: [
-                  // Main Image
-                  SizedBox(
+                  // Product Image
+                  Container(
                     width: double.infinity,
-                    child: CachedNetworkImage(
-                      imageUrl: product.primaryImage?.url ?? '',
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: colorScheme.surfaceVariant,
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceVariant.withOpacity(0.3),
+                    ),
+                    child: product.primaryImage?.url != null
+                        ? ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12),
+                            ),
+                            child: Image.network(
+                              product.primaryImage!.url,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: colorScheme.surfaceVariant,
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    color: colorScheme.onSurfaceVariant,
+                                    size: 48,
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        : Container(
+                            color: colorScheme.surfaceVariant,
+                            child: Icon(
+                              Icons.image,
+                              color: colorScheme.onSurfaceVariant,
+                              size: 48,
+                            ),
+                          ),
+                  ),
+                  
+                  // Favorite Button
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      errorWidget: (context, url, error) => Container(
-                        color: colorScheme.surfaceVariant,
-                        child: Icon(
-                          Icons.image_not_supported,
-                          color: colorScheme.onSurfaceVariant,
-                          size: 40,
+                      child: IconButton(
+                        onPressed: () {
+                          ref.read(favoritesNotifierProvider.notifier).toggleFavorite(product.id);
+                        },
+                        icon: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.red : Colors.grey[600],
+                          size: 20,
                         ),
+                        constraints: const BoxConstraints(
+                          minWidth: 36,
+                          minHeight: 36,
+                        ),
+                        padding: const EdgeInsets.all(8),
                       ),
                     ),
                   ),
@@ -70,41 +117,18 @@ class ProductCard extends StatelessWidget {
                       left: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
+                          horizontal: 8,
+                          vertical: 4,
                         ),
                         decoration: BoxDecoration(
                           color: colorScheme.error,
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          '-${product.computedDiscountPercentage?.toStringAsFixed(0)}%',
+                          '-${product.computedDiscountPercentage?.toInt() ?? 0}%',
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: colorScheme.onError,
                             fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  
-                  // Favorite Button
-                  if (onFavoritePressed != null)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Material(
-                        color: Colors.white.withOpacity(0.9),
-                        shape: const CircleBorder(),
-                        child: InkWell(
-                          onTap: onFavoritePressed,
-                          customBorder: const CircleBorder(),
-                          child: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: Icon(
-                              isFavorite ? Icons.favorite : Icons.favorite_border,
-                              color: isFavorite ? colorScheme.error : Colors.grey[600],
-                              size: 18,
-                            ),
                           ),
                         ),
                       ),
@@ -155,8 +179,8 @@ class ProductCard extends StatelessWidget {
                     // Product Name
                     Text(
                       product.name,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -165,63 +189,91 @@ class ProductCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     
                     // Rating
-                    Row(
-                      children: [
-                        CustomRatingBar(
-                          rating: product.rating,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '(${product.reviewCount})',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
+                    if (product.rating > 0)
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                            size: 16,
                           ),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 4),
+                          Text(
+                            product.rating.toStringAsFixed(1),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          if (product.reviewCount > 0) ...[
+                            const SizedBox(width: 4),
+                            Text(
+                              '(${product.reviewCount})',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     
                     const Spacer(),
                     
-                    // Price Row
+                    // Price Section
                     Row(
                       children: [
                         // Current Price
                         Text(
-                          product.formattedPrice,
+                          '\$${product.price.toStringAsFixed(2)}',
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colorScheme.primary,
                           ),
                         ),
                         
-                        const SizedBox(width: 6),
-                        
                         // Original Price (if discounted)
-                        if (product.hasDiscount && product.formattedOriginalPrice != null)
+                        if (product.originalPrice != null && product.originalPrice! > product.price) ...[
+                          const SizedBox(width: 8),
                           Text(
-                            product.formattedOriginalPrice!,
-                            style: theme.textTheme.bodySmall?.copyWith(
+                            '\$${product.originalPrice!.toStringAsFixed(2)}',
+                            style: theme.textTheme.labelMedium?.copyWith(
                               decoration: TextDecoration.lineThrough,
                               color: colorScheme.onSurfaceVariant,
                             ),
                           ),
+                        ],
                         
                         const Spacer(),
                         
                         // Add to Cart Button
-                        if (showAddToCart && product.inStock)
-                          SizedBox(
-                            height: 32,
-                            child: IconButton.outlined(
-                              onPressed: onAddToCart,
-                              icon: const Icon(Icons.add_shopping_cart),
-                              iconSize: 16,
-                              style: IconButton.styleFrom(
-                                padding: const EdgeInsets.all(4),
-                              ),
-                            ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: product.inStock ? colorScheme.primary : colorScheme.surfaceVariant,
+                            borderRadius: BorderRadius.circular(8),
                           ),
+                          child: IconButton(
+                            onPressed: product.inStock
+                                ? () {
+                                    ref.read(cartNotifierProvider.notifier).addToCart(product, 1);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('${product.name} added to cart'),
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                  }
+                                : null,
+                            icon: Icon(
+                              Icons.add_shopping_cart,
+                              color: product.inStock ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+                              size: 20,
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
+                            padding: const EdgeInsets.all(6),
+                          ),
+                        ),
                       ],
                     ),
                   ],

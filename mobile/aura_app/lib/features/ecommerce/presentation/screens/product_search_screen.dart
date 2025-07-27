@@ -340,7 +340,6 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
           return ProductCard(
             product: product,
             onTap: () => context.push('/product/${product.id}'),
-            onAddToCart: () => _addToCart(product),
           );
         },
       ),
@@ -370,7 +369,6 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               child: ProductCard(
                 product: product,
                 onTap: () => context.push('/product/${product.id}'),
-                onAddToCart: () => _addToCart(product),
               ),
             ),
           );
@@ -379,18 +377,4 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     );
   }
 
-  void _addToCart(Product product) {
-    // TODO: Implement add to cart functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${product.name} added to cart'),
-        action: SnackBarAction(
-          label: 'View Cart',
-          onPressed: () {
-            // TODO: Navigate to cart
-          },
-        ),
-      ),
-    );
-  }
 }

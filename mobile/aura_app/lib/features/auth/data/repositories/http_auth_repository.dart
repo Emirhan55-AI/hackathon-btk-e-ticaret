@@ -128,6 +128,8 @@ class HttpAuthRepository implements AuthRepository {
     String? gender,
   }) async {
     try {
+      // For Phase 1, we'll use getCurrentUser as placeholder
+      // In Phase 2, implement actual profile update API call
       final userModel = await _remoteDataSource.getCurrentUser();
       return Right(userModel.toEntity());
     } on ApiException catch (e) {
@@ -150,6 +152,8 @@ class HttpAuthRepository implements AuthRepository {
     required String newPassword,
   }) async {
     try {
+      // For Phase 1, we'll implement basic functionality
+      // In Phase 2, implement actual password change API call
       await _remoteDataSource.logout();
       return const Right(null);
     } on ApiException catch (e) {

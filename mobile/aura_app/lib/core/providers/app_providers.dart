@@ -11,6 +11,9 @@ import '../../features/ecommerce/presentation/notifiers/product_search_notifier.
 import '../../features/ecommerce/presentation/notifiers/product_search_state.dart';
 import '../../features/ecommerce/presentation/notifiers/product_detail_notifier.dart';
 import '../../features/ecommerce/presentation/notifiers/product_detail_state.dart';
+import '../../features/ecommerce/presentation/notifiers/cart_notifier.dart';
+import '../../features/ecommerce/presentation/notifiers/cart_state.dart';
+import '../../features/ecommerce/presentation/notifiers/favorites_notifier.dart';
 
 /// Basic HTTP client provider
 final httpClientProvider = Provider<http.Client>((ref) => http.Client());
@@ -115,8 +118,20 @@ final navigationHistoryProvider = StateProvider<List<String>>((ref) {
   return [];
 });
 
-final cartItemCountProvider = StateProvider<int>((ref) {
-  return 0;
+/// Cart notifier provider
+final cartNotifierProvider = StateNotifierProvider<CartNotifier, CartState>((ref) {
+  return CartNotifier();
+});
+
+/// Cart item count provider (computed from cart state)
+final cartItemCountProvider = Provider<int>((ref) {
+  final cartState = ref.watch(cartNotifierProvider);
+  return cartState.totalItems;
+});
+
+/// Favorites notifier provider
+final favoritesNotifierProvider = StateNotifierProvider<FavoritesNotifier, Set<String>>((ref) {
+  return FavoritesNotifier();
 });
 
 final userFavoritesProvider = StateProvider<Set<String>>((ref) {

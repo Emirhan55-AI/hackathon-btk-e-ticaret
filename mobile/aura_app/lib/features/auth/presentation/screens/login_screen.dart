@@ -50,23 +50,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     
     // Listen to auth state for navigation and error handling
     ref.listen<AuthState>(authNotifierProvider, (previous, next) {
-      next.when(
-        initial: () {},
-        loading: () {},
-        authenticated: (user) {
-          // Navigate to home on successful authentication
-          if (context.mounted) {
-            context.go('/home');
-          }
-        },
-        unauthenticated: () {},
-        error: (failure) {
-          // Show error message
-          if (context.mounted) {
-            AppUtils.showErrorSnackbar(context, failure.message);
-          }
-        },
-      );
+      if (next is AuthAuthenticated) {
+        // Navigate to home on successful authentication
+        if (context.mounted) {
+          context.go('/home');
+        }
+      } else if (next is AuthError) {
+        // Show error message
+        if (context.mounted) {
+          AppUtils.showErrorSnackbar(context, next.failure.message);
+        }
+      }
     });
 
     final authState = ref.watch(authNotifierProvider);

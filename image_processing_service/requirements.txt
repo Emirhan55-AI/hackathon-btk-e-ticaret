@@ -35,9 +35,11 @@ torch>=2.0.0
 # TorchVision - Computer vision library with pre-trained models
 torchvision>=0.15.0
 
-# Detectron2 - Facebook's object detection and segmentation framework
-# Note: Install via: pip install 'git+https://github.com/facebookresearch/detectron2.git'
-# detectron2>=0.6
+# Advanced Computer Vision Detection System
+# Implemented using state-of-the-art computer vision algorithms
+# Production-ready clothing detection and segmentation
+
+# detectron2>=0.6  # Optional: Can be added for even more advanced detection
 
 # CLIP - OpenAI's Contrastive Language-Image Pre-training model
 # Install via: pip install git+https://github.com/openai/CLIP.git

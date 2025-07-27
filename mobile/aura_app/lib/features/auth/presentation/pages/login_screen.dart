@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/app_utils.dart';
+import '../../../../core/widgets/lottie_animations.dart';
 import '../notifiers/auth_provider.dart';
 import '../components/auth_button.dart';
 import '../components/auth_text_field.dart';
@@ -36,8 +37,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     try {
       await ref.read(authNotifierProvider.notifier).login(
-        _emailController.text.trim(),
-        _passwordController.text,
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
       );
 
       if (mounted) {
@@ -148,14 +149,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Login Button
                 AuthButton(
                   child: authState.isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
+                      ? LottieAnimations.loading()
                       : const Text('Sign In'),
                   onPressed: authState.isLoading ? null : _handleLogin,
                 ),

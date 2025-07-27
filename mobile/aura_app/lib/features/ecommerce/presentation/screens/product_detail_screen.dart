@@ -73,7 +73,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       controller: _scrollController,
       slivers: [
         // App bar
-        _buildSliverAppBar(context, product),
+        _buildSliverAppBar(context, product, state),
         
         // Product content
         SliverToBoxAdapter(
@@ -132,7 +132,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     );
   }
 
-  Widget _buildSliverAppBar(BuildContext context, Product product) {
+  Widget _buildSliverAppBar(BuildContext context, Product product, ProductDetailState state) {
     final colorScheme = Theme.of(context).colorScheme;
     
     return SliverAppBar(
@@ -153,10 +153,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         ),
         IconButton(
           onPressed: () {
-            // TODO: Toggle favorite when provider is available
-            // ref.read(productDetailNotifierProvider.notifier).toggleFavorite();
+            ref.read(productDetailNotifierProvider.notifier).toggleFavorite();
           },
-          icon: const Icon(Icons.favorite_border), // TODO: Use state.isFavorite
+          icon: Icon(
+            state.isFavorite ? Icons.favorite : Icons.favorite_border,
+            color: state.isFavorite ? Colors.red : null,
+          ),
         ),
         const SizedBox(width: 8),
       ],

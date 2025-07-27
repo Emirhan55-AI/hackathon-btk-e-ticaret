@@ -87,3 +87,12 @@ class ImageException extends AppException {
     super.statusCode,
   });
 }
+
+/// Data parsing related exceptions
+class DataParsingException extends AppException {
+  const DataParsingException({
+    required super.message,
+    super.details,
+    super.statusCode,
+  });
+}

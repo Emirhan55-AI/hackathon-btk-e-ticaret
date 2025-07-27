@@ -15,6 +15,7 @@ class Container(containers.DeclarativeContainer):
             "app.features.style_quiz.presentation.routers",
             "app.features.recommendations.presentation.routers",
             "app.features.ecommerce.presentation.routers",
+            "app.features.ecommerce.presentation.cart_routers",
         ]
     )
     
@@ -52,11 +53,6 @@ class Container(containers.DeclarativeContainer):
     recommendations_repository = providers.Factory(
         "app.features.recommendations.infrastructure.repositories.SqlAlchemyRecommendationsRepository",
         session_factory=database.provided.session_factory,
-    )
-    
-    ecommerce_repository = providers.Factory(
-        "app.features.ecommerce.infrastructure.repositories.HttpEcommerceRepository",
-        http_client=http_client,
     )
     
     # Use Cases
@@ -150,6 +146,12 @@ class Container(containers.DeclarativeContainer):
         api_key=config.ecommerce_api_key,
     )
     
+    # Cart Repository
+    cart_repository = providers.Factory(
+        "app.features.ecommerce.infrastructure.cart_repositories.SqlAlchemyCartRepository",
+        session_factory=database.provided.session_factory,
+    )
+    
     # E-commerce Use Cases
     search_products_use_case = providers.Factory(
         "app.features.ecommerce.application.use_cases.SearchProductsUseCase",
@@ -170,6 +172,32 @@ class Container(containers.DeclarativeContainer):
         "app.features.ecommerce.application.use_cases.GetProductRecommendationsUseCase",
         repository=ecommerce_repository,
     )
+    
+    # Cart Use Cases
+    add_to_cart_use_case = providers.Factory(
+        "app.features.ecommerce.application.cart_use_cases.AddToCartUseCase",
+        repository=cart_repository,
+    )
+    
+    get_cart_use_case = providers.Factory(
+        "app.features.ecommerce.application.cart_use_cases.GetCartUseCase",
+        repository=cart_repository,
+    )
+    
+    update_cart_item_use_case = providers.Factory(
+        "app.features.ecommerce.application.cart_use_cases.UpdateCartItemUseCase",
+        repository=cart_repository,
+    )
+    
+    remove_from_cart_use_case = providers.Factory(
+        "app.features.ecommerce.application.cart_use_cases.RemoveFromCartUseCase",
+        repository=cart_repository,
+    )
+    
+    clear_cart_use_case = providers.Factory(
+        "app.features.ecommerce.application.cart_use_cases.ClearCartUseCase",
+        repository=cart_repository,
+    )
 
 
 # Global container instance
@@ -186,6 +214,8 @@ def setup_container() -> None:
             "database_url": settings.database_url,
             "ai_service_url": settings.ai_service_url,
             "ai_service_api_key": settings.ai_service_api_key,
+            "ecommerce_api_url": settings.ecommerce_api_url,
+            "ecommerce_api_key": settings.ecommerce_api_key,
         })
         
         # Wire the container
@@ -195,6 +225,7 @@ def setup_container() -> None:
             "app.features.style_quiz.presentation.routers",
             "app.features.recommendations.presentation.routers",
             "app.features.ecommerce.presentation.routers",
+            "app.features.ecommerce.presentation.cart_routers",
         ])
         
         logger.info("Dependency injection container configured successfully")

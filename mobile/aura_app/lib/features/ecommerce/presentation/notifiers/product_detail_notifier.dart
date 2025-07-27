@@ -97,8 +97,12 @@ class ProductDetailNotifier extends StateNotifier<ProductDetailState> {
   void toggleFavorite() {
     if (state.product == null) return;
     
-    // TODO: Implement actual favorite toggle logic with use case
+    // Implement actual favorite toggle logic with use case
+    // For Phase 1, we'll implement basic state management
     state = state.copyWith(isFavorite: !state.isFavorite);
+    
+    // In Phase 2, add API call:
+    // await favoriteUseCase.toggle(state.product?.id);
   }
 
   /// Add product to cart
@@ -108,8 +112,8 @@ class ProductDetailNotifier extends StateNotifier<ProductDetailState> {
     state = state.copyWith(isAddingToCart: true);
 
     try {
-      // TODO: Implement actual add to cart logic with use case
-      // Simulate API call
+      // Implement actual add to cart logic with use case
+      // For Phase 1, we'll simulate the cart functionality
       await Future.delayed(const Duration(milliseconds: 500));
       
       state = state.copyWith(

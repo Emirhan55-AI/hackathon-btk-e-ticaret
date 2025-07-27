@@ -65,17 +65,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
   })  : _loginUseCase = loginUseCase,
         _logoutUseCase = logoutUseCase,
         _getCurrentUserUseCase = getCurrentUserUseCase,
-        super(const AuthState.initial());
+        super(const AuthInitial());
 
   /// Initialize auth state by checking for existing session
   Future<void> initialize() async {
-    state = const AuthState.loading();
+    state = const AuthLoading();
     
     final result = await _getCurrentUserUseCase();
     
     result.fold(
-      (failure) => state = const AuthState.unauthenticated(),
-      (user) => state = AuthState.authenticated(user),
+      (failure) => state = const AuthUnauthenticated(),
+      (user) => state = AuthAuthenticated(user),
     );
   }
 
@@ -84,7 +84,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String email,
     required String password,
   }) async {
-    state = const AuthState.loading();
+    state = const AuthLoading();
     
     final result = await _loginUseCase(
       email: email,
@@ -92,46 +92,34 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
     
     result.fold(
-      (failure) => state = AuthState.error(failure),
-      (user) => state = AuthState.authenticated(user),
+      (failure) => state = AuthError(failure),
+      (user) => state = AuthAuthenticated(user),
     );
   }
 
   /// Logout current user
   Future<void> logout() async {
-    state = const AuthState.loading();
+    state = const AuthLoading();
     
     final result = await _logoutUseCase();
     
     result.fold(
-      (failure) => state = AuthState.error(failure),
-      (success) => state = const AuthState.unauthenticated(),
+      (failure) => state = AuthError(failure),
+      (success) => state = const AuthUnauthenticated(),
     );
   }
 
   /// Check if user is authenticated
-  bool get isAuthenticated => state.maybeWhen(
-        authenticated: (_) => true,
-        orElse: () => false,
-      );
+  bool get isAuthenticated => state.isAuthenticated;
 
   /// Get current user if authenticated
-  User? get currentUser => state.maybeWhen(
-        authenticated: (user) => user,
-        orElse: () => null,
-      );
+  User? get currentUser => state.user;
 
   /// Check if auth operation is in progress
-  bool get isLoading => state.maybeWhen(
-        loading: () => true,
-        orElse: () => false,
-      );
+  bool get isLoading => state.isLoading;
 
   /// Get current error if any
-  String? get errorMessage => state.maybeWhen(
-        error: (failure) => failure.message,
-        orElse: () => null,
-      );
+  String? get errorMessage => state.failure?.message;
 }
 
 /// Auth state notifier provider (minimal version)
@@ -172,13 +160,12 @@ final isAuthenticatedProvider = Provider<bool>((ref) {
 final navigationGuardProvider = Provider<String?>((ref) {
   final authState = ref.watch(authStateProvider);
   
-  return authState.when(
-    initial: () => null,
-    loading: () => null,
-    authenticated: (_) => '/home',
-    unauthenticated: () => '/login',
-    error: (_) => '/login',
-  );
+  if (authState is AuthAuthenticated) {
+    return '/home';
+  } else if (authState is AuthUnauthenticated || authState is AuthError) {
+    return '/login';
+  }
+  return null; // AuthInitial or AuthLoading
 });
 
 /// Auto initialization provider
