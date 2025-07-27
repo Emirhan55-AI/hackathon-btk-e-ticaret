@@ -17,12 +17,14 @@ dependencies:
   
   # Functional Programming
   dartz: ^0.10.1
+  equatable: ^2.0.5
   
   # Networking
   http: ^1.2.1
   
   # Image Handling
   image_picker: ^1.1.2
+  cached_network_image: ^3.3.1
   
   # Security
   flutter_secure_storage: ^9.2.2
