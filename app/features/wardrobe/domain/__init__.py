@@ -1,1 +1,0 @@
-# Wardrobe domain package

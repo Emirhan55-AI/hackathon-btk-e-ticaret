@@ -1,353 +1,137 @@
-# Aura AI Complete System - Docker Compose Configuration
-# Orchestrates all 8 phases of the AI personal style assistant + E-commerce platform
-# Creates a fully integrated microservices architecture with proper networking
+# Aura AI System - Production Ready Configuration
+# Ultra-clean AI microservices architecture
 
 version: '3.8'
 
 services:
-  # PostgreSQL Database - Central data storage for e-commerce platform
-  postgres:
-    image: postgres:15-alpine
-    container_name: aura_postgres
-    environment:
-      POSTGRES_DB: aura_db
-      POSTGRES_USER: aura_user
-      POSTGRES_PASSWORD: aura_password
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U aura_user -d aura_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - aura_network
-    restart: unless-stopped
-
-  # Redis - Caching and session management for high performance
-  redis:
-    image: redis:7-alpine
-    container_name: aura_redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - aura_network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-    restart: unless-stopped
-
-  # E-commerce Backend - FastAPI application for core platform functionality
-  backend:
-    build: .
-    container_name: aura_backend
-    environment:
-      DATABASE_URL: postgresql+asyncpg://aura_user:aura_password@postgres:5432/aura_db
-      SECRET_KEY: dev-secret-key-change-in-production
-      AI_ORCHESTRATOR_URL: http://orchestrator-service:8006
-      AI_SERVICE_API_KEY: dev-ai-service-key
-      DEBUG: "true"
-      LOG_LEVEL: INFO
-      REDIS_URL: redis://redis:6379/0
-    volumes:
-      - ./logs:/app/logs
-      - ./app:/app/app
-      - aura_shared_logs:/app/shared_logs
-    ports:
-      - "8000:8000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - aura_network
-    restart: unless-stopped
-
-  # Phase 2: Image Processing Service - Computer Vision and Visual Analysis
-  # Handles clothing image analysis using ResNet-50, ViT, and CLIP models
-  image-processing-service:
+  # Image Processing AI Service
+  image-processing:
     build:
-      context: ./image_processing_service
+      context: ./aura_ai_system/services/image_processing_service
       dockerfile: Dockerfile
-    container_name: aura-image-processing
-    hostname: image-processing-service
+    container_name: aura-image-ai
     ports:
       - "8001:8001"
     networks:
-      - aura_network
+      - aura-network
     volumes:
-      - aura_image_models:/app/models
-      - aura_shared_logs:/app/logs
-    environment:
-      - SERVICE_NAME=image_processing_service
-      - SERVICE_PORT=8001
-      - MODEL_CACHE_DIR=/app/models
-      - LOG_LEVEL=INFO
-      - GPU_ENABLED=false
-      - TORCH_HOME=/app/models/torch
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+      - ai_models:/app/models
+      - ai_logs:/app/logs
     restart: unless-stopped
 
-  # Phase 3: Natural Language Understanding Service - Multilingual Text Analysis
-  # Processes natural language using XLM-R transformer for multilingual understanding
+  # Natural Language Understanding AI Service  
   nlu-service:
     build:
-      context: ./nlu_service
+      context: ./aura_ai_system/services/nlu_service
       dockerfile: Dockerfile
-    container_name: aura-nlu
-    hostname: nlu-service
+    container_name: aura-nlu-ai
     ports:
       - "8002:8002"
     networks:
-      - aura_network
+      - aura-network
     volumes:
-      - aura_nlu_models:/app/models
-      - aura_shared_logs:/app/logs
-    environment:
-      - SERVICE_NAME=nlu_service
-      - SERVICE_PORT=8002
-      - MODEL_CACHE_DIR=/app/models
-      - LOG_LEVEL=INFO
-      - TRANSFORMERS_CACHE=/app/models/transformers
-      - HF_HOME=/app/models/huggingface
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 90s
+      - ai_models:/app/models
+      - ai_logs:/app/logs
     restart: unless-stopped
 
-  # Phase 4: Style Profile Service - Advanced User Style Analysis
-  # Creates comprehensive user style profiles using multi-modal AI features
-  style-profile-service:
+  # Style Profile AI Service
+  style-profile:
     build:
-      context: ./style_profile_service
+      context: ./aura_ai_system/services/style_profile_service
       dockerfile: Dockerfile
-    container_name: aura-style-profile
-    hostname: style-profile-service
+    container_name: aura-style-ai
     ports:
       - "8003:8003"
     networks:
-      - aura_network
+      - aura-network
     volumes:
-      - aura_style_data:/app/data
-      - aura_shared_logs:/app/logs
-    environment:
-      - SERVICE_NAME=style_profile_service
-      - SERVICE_PORT=8003
-      - DATABASE_PATH=/app/data/style_profiles.db
-      - LOG_LEVEL=INFO
-      - IMAGE_SERVICE_URL=http://image-processing-service:8001
-      - NLU_SERVICE_URL=http://nlu-service:8002
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 45s
+      - ai_data:/app/data
+      - ai_logs:/app/logs
     restart: unless-stopped
-    depends_on:
-      - image-processing-service
-      - nlu-service
 
-  # Phase 5: Combination Engine Service - Intelligent Outfit Generation
-  # Generates optimal clothing combinations using graph algorithms and fashion rules
-  combination-engine-service:
+  # Combination Engine AI Service
+  combination-engine:
     build:
-      context: ./combination_engine_service
+      context: ./aura_ai_system/services/combination_engine_service
       dockerfile: Dockerfile
-    container_name: aura-combination-engine
-    hostname: combination-engine-service
+    container_name: aura-combination-ai
     ports:
       - "8004:8004"
     networks:
-      - aura_network
+      - aura-network
     volumes:
-      - aura_combination_cache:/app/cache
-      - aura_shared_logs:/app/logs
-    environment:
-      - SERVICE_NAME=combination_engine_service
-      - SERVICE_PORT=8004
-      - CACHE_DIR=/app/cache
-      - LOG_LEVEL=INFO
-      - IMAGE_SERVICE_URL=http://image-processing-service:8001
-      - STYLE_SERVICE_URL=http://style-profile-service:8003
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 45s
-    restart: unless-stopped
+      - ai_data:/app/data
+      - ai_logs:/app/logs
     depends_on:
-      - image-processing-service
-      - style-profile-service
+      - image-processing
+      - style-profile
+    restart: unless-stopped
 
-  # Phase 6: Recommendation Engine Service - FAISS-Powered Product Recommendations
-  # Provides ultra-fast similarity search and personalized product recommendations
-  recommendation-engine-service:
+  # Recommendation Engine AI Service
+  recommendation-engine:
     build:
-      context: ./recommendation_engine_service
+      context: ./aura_ai_system/services/recommendation_engine_service
       dockerfile: Dockerfile
-    container_name: aura-recommendation-engine
-    hostname: recommendation-engine-service
+    container_name: aura-recommendation-ai
     ports:
       - "8005:8005"
     networks:
-      - aura_network
+      - aura-network
     volumes:
-      - aura_recommendation_faiss:/app/faiss_data
-      - aura_shared_logs:/app/logs
-    environment:
-      - SERVICE_NAME=recommendation_engine_service
-      - SERVICE_PORT=8005
-      - FAISS_INDEX_PATH=/app/faiss_data
-      - LOG_LEVEL=INFO
-      - IMAGE_SERVICE_URL=http://image-processing-service:8001
-      - STYLE_SERVICE_URL=http://style-profile-service:8003
-      - COMBINATION_SERVICE_URL=http://combination-engine-service:8004
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
-    restart: unless-stopped
+      - ai_data:/app/data
+      - ai_indexes:/app/indexes
+      - ai_logs:/app/logs
     depends_on:
-      - image-processing-service
-      - style-profile-service
-      - combination-engine-service
+      - style-profile
+      - image-processing
+    restart: unless-stopped
 
-  # Phase 7: Orchestrator Service - Advanced Workflow Coordination
-  # Coordinates complex workflows across all AI services with intelligent routing
-  orchestrator-service:
+  # AI Orchestrator Service (Main Coordinator)
+  orchestrator:
     build:
-      context: ./orchestrator_service
+      context: ./aura_ai_system/services/orchestrator_service
       dockerfile: Dockerfile
-    container_name: aura-orchestrator
-    hostname: orchestrator-service
+    container_name: aura-orchestrator-ai
     ports:
       - "8006:8006"
     networks:
-      - aura_network
+      - aura-network
     volumes:
-      - aura_orchestrator_workflows:/app/workflows
-      - aura_shared_logs:/app/logs
-    environment:
-      - SERVICE_NAME=orchestrator_service
-      - SERVICE_PORT=8006
-      - WORKFLOW_STORAGE=/app/workflows
-      - LOG_LEVEL=INFO
-      - IMAGE_SERVICE_URL=http://image-processing-service:8001
-      - NLU_SERVICE_URL=http://nlu-service:8002
-      - STYLE_SERVICE_URL=http://style-profile-service:8003
-      - COMBINATION_SERVICE_URL=http://combination-engine-service:8004
-      - RECOMMENDATION_SERVICE_URL=http://recommendation-engine-service:8005
-      - FEEDBACK_SERVICE_URL=http://feedback-loop-service:8007
-      - ECOMMERCE_BACKEND_URL=http://backend:8000
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 45s
-    restart: unless-stopped
+      - ai_data:/app/data
+      - ai_logs:/app/logs
     depends_on:
-      - image-processing-service
+      - image-processing
       - nlu-service
-      - style-profile-service
-      - combination-engine-service
-      - recommendation-engine-service
+      - style-profile
+      - combination-engine
+      - recommendation-engine
+      - feedback-loop
+    restart: unless-stopped
 
-  # Phase 8: Feedback Loop Service - Intelligent Learning and Adaptation
-  # Processes user feedback and continuously improves system performance
-  feedback-loop-service:
+  # Feedback Loop AI Service
+  feedback-loop:
     build:
-      context: ./feedback_loop_service
+      context: ./aura_ai_system/services/feedback_loop_service
       dockerfile: Dockerfile
-    container_name: aura-feedback-loop
-    hostname: feedback-loop-service
+    container_name: aura-feedback-ai
     ports:
       - "8007:8007"
     networks:
-      - aura_network
+      - aura-network
     volumes:
-      - aura_feedback_data:/app/data
-      - aura_shared_logs:/app/logs
-    environment:
-      - SERVICE_NAME=feedback_loop_service
-      - SERVICE_PORT=8007
-      - DATABASE_PATH=/app/data/feedback.db
-      - LOG_LEVEL=INFO
-      - IMAGE_SERVICE_URL=http://image-processing-service:8001
-      - NLU_SERVICE_URL=http://nlu-service:8002
-      - STYLE_SERVICE_URL=http://style-profile-service:8003
-      - COMBINATION_SERVICE_URL=http://combination-engine-service:8004
-      - RECOMMENDATION_SERVICE_URL=http://recommendation-engine-service:8005
-      - ORCHESTRATOR_SERVICE_URL=http://orchestrator-service:8006
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8007/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 45s
-    restart: unless-stopped
+      - ai_data:/app/data
+      - ai_logs:/app/logs
     depends_on:
-      - image-processing-service
-      - nlu-service
-      - style-profile-service
-      - combination-engine-service
-      - recommendation-engine-service
-      - orchestrator-service
+      - style-profile
+      - recommendation-engine
+    restart: unless-stopped
 
-# Define persistent volumes for data storage across container restarts
-# Each component gets dedicated storage for models, databases, and logs
-volumes:
-  postgres_data:
-    driver: local
-  redis_data:
-    driver: local
-  aura_image_models:
-    driver: local
-  aura_nlu_models:
-    driver: local
-  aura_style_data:
-    driver: local
-  aura_combination_cache:
-    driver: local
-  aura_recommendation_faiss:
-    driver: local
-  aura_orchestrator_workflows:
-    driver: local
-  aura_feedback_data:
-    driver: local
-  aura_shared_logs:
-    driver: local
-
-# Define custom network for secure service communication
 networks:
-  aura_network:
+  aura-network:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
+
+volumes:
+  ai_models:
+  ai_data:
+  ai_indexes:
+  ai_logs:
