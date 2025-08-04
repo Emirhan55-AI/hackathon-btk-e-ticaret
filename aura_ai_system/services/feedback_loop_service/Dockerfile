@@ -60,8 +60,6 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
 # Copy all necessary files for the feedback loop service
 COPY advanced_feedback_processor.py .
 COPY main.py .
-COPY phase8_demo.py .
-COPY test_phase8_feedback.py .
 
 # Create docs directory and copy any documentation files if they exist
 # Using shell command to handle optional file copying gracefully

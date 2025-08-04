@@ -29,12 +29,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade --timeout 300 -r requirements.txt
 
 # Copy the enhanced application files to the container
-# This includes the main FastAPI service and enhanced recommendation engine
+# This includes the main FastAPI service for recommendation engine
 COPY main.py .
-COPY enhanced_recommender.py .
-
-# Copy test files for development and debugging
-COPY test_phase6_recommendations.py .
 
 # Expose port 8005 to allow external connections to the service
 # This is the port on which the enhanced recommendation service will listen
