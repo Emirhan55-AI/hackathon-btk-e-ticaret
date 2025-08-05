@@ -1,0 +1,63 @@
+# Core dependencies for the Combination Engine Service
+# This service generates personalized clothing combinations
+
+# FastAPI - Modern web framework for building REST APIs
+fastapi>=0.104.0
+
+# Uvicorn - ASGI server for running FastAPI applications
+uvicorn[standard]>=0.24.0
+
+# Pydantic - Data validation and serialization
+pydantic>=2.4.0
+
+# Requests - HTTP client for inter-service communication
+requests>=2.31.0
+
+# Python-dotenv - Environment variable management
+python-dotenv>=1.0.0
+
+# NumPy - Numerical operations for style calculations
+numpy>=1.24.0
+
+# Phase 5: AI-powered Combination Engine Dependencies
+# PyTorch - Deep learning framework for AI model inference (compatible versions)
+torch==2.0.1
+
+# Torchvision - Computer vision utilities and pre-trained models (compatible with PyTorch 2.0.1)
+torchvision==0.15.2
+
+# Transformers - Hugging Face transformers for NLP models
+transformers>=4.35.0
+
+# CLIP - Image-text understanding (using transformers CLIP implementation)
+# clip-by-openai>=1.0  # Temporarily disabled due to PyTorch version conflicts
+
+# Pillow - Image processing library
+Pillow>=10.0.0
+
+# SciPy - Scientific computing for advanced algorithms
+scipy>=1.11.0
+
+# NetworkX - Graph algorithms for outfit compatibility analysis
+networkx>=3.1
+
+# Matplotlib - Plotting library for visualization
+matplotlib>=3.7.0
+
+# Seaborn - Statistical data visualization
+seaborn>=0.12.0
+
+# Scikit-learn - Machine learning algorithms for clustering and analysis
+scikit-learn>=1.3.0
+
+# FAISS - Efficient similarity search for style matching
+faiss-cpu>=1.7.4
+
+# Pandas - Data manipulation and analysis
+pandas>=2.1.0
+
+# The following will be added in Phase 5 when implementing AI models:
+# torch>=2.0.0  # PyTorch for transformer models
+# transformers>=4.35.0  # Hugging Face transformers for combination generation
+# torch-geometric>=2.4.0  # Graph neural networks for style compatibility
+# networkx>=3.1.0  # Graph operations for wardrobe relationships

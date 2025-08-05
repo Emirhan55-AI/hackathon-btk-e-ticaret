@@ -1,0 +1,38 @@
+# Lightweight Dockerfile for Image Processing Service
+# This version uses minimal dependencies to avoid long build times
+# Excludes heavy PyTorch and CUDA libraries for Phase 1 deployment
+
+# Use Python 3.9 slim base image for smaller footprint
+FROM python:3.9-slim
+
+# Set working directory inside the container
+WORKDIR /app
+
+# Install only essential system dependencies for OpenCV (lightweight approach)
+# These packages are much smaller than full CUDA libraries
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy lightweight requirements file first for better Docker layer caching
+COPY requirements_light.txt .
+
+# Install Python packages using lightweight requirements
+# This avoids downloading heavy PyTorch and CUDA libraries
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements_light.txt
+
+# Copy the application code into the container
+COPY . .
+
+# Expose port 8001 for the image processing service
+EXPOSE 8001
+
+# Set the command to run the FastAPI application
+# Use uvicorn server to serve the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]

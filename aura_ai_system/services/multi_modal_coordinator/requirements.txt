@@ -1,0 +1,22 @@
+# 📦 Multi-Modal Coordinator Service Requirements
+# AURA AI Çok Modlu Sorgu Koordinatörü Python Dependencies (Simplified)
+
+# FastAPI framework ve HTTP server - API service için core components
+fastapi>=0.100.0           # Modern, fast web framework for building APIs
+uvicorn>=0.20.0            # Lightning-fast ASGI server implementation
+pydantic>=2.0.0           # Data validation ve serialization için
+
+# HTTP client library - Microservices arası communication için
+httpx>=0.25.0             # Async HTTP client for service-to-service calls
+requests>=2.31.0          # Simple HTTP library for basic requests
+
+# Image processing dependencies - CLIP ve computer vision için
+Pillow>=10.0.0            # Python Imaging Library for image manipulation
+
+# Basic utilities
+python-multipart>=0.0.6  # File upload support for FastAPI
+python-dotenv>=1.0.0     # Load environment variables from .env files
+
+# Testing frameworks - Unit ve integration testleri için
+pytest>=7.0.0            # Testing framework
+pytest-asyncio>=0.21.0   # Async support for pytest

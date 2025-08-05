@@ -1,0 +1,63 @@
+# Core dependencies for the Recommendation Engine Service
+# This service provides personalized product recommendations
+
+# FastAPI - Modern web framework for building REST APIs
+fastapi>=0.104.0
+
+# Uvicorn - ASGI server for running FastAPI applications
+uvicorn[standard]>=0.24.0
+
+# Pydantic - Data validation and serialization
+pydantic>=2.4.0
+
+# Requests - HTTP client for API calls to e-commerce services
+requests>=2.31.0
+
+# Python-dotenv - Environment variable management
+python-dotenv>=1.0.0
+
+# NumPy - Numerical operations for similarity calculations
+numpy>=1.24.0
+
+# Phase 6: Enhanced Recommendation Engine Dependencies
+# FAISS - Facebook AI Similarity Search for ultra-fast vector similarity
+faiss-cpu>=1.7.4
+
+# PyTorch - Deep learning framework for AI model inference (compatible versions)
+torch==2.0.1
+
+# Torchvision - Computer vision utilities and pre-trained models (compatible with PyTorch 2.0.1)
+torchvision==0.15.2
+
+# Transformers - Hugging Face transformers for advanced NLP models
+transformers>=4.35.0
+
+# CLIP - Image-text understanding (using transformers CLIP implementation)
+# clip-by-openai>=1.0  # Temporarily disabled due to PyTorch version conflicts
+
+# Scikit-learn - Machine learning algorithms for recommendation systems
+scikit-learn>=1.3.0
+
+# Pandas - Data manipulation and analysis for product catalogs
+pandas>=2.1.0
+
+# SciPy - Scientific computing for advanced recommendation algorithms
+scipy>=1.11.0
+
+# Matplotlib - Plotting library for recommendation analytics
+matplotlib>=3.7.0
+
+# Seaborn - Statistical data visualization for recommendation insights
+seaborn>=0.12.0
+
+# NetworkX - Graph algorithms for product relationship modeling
+networkx>=3.1
+
+# Pillow - Image processing library for product images
+Pillow>=10.0.0
+
+# SQLAlchemy - Database ORM for product catalog management
+sqlalchemy>=2.0.0
+
+# Sentence-Transformers - Semantic similarity for text-based recommendations
+sentence-transformers>=2.2.0

@@ -106,6 +106,7 @@ services:
       - combination-engine
       - recommendation-engine
       - feedback-loop
+      - quality-assurance
     restart: unless-stopped
 
   # Feedback Loop AI Service
@@ -125,6 +126,55 @@ services:
       - style-profile
       - recommendation-engine
     restart: unless-stopped
+
+  # Quality Assurance AI Service (RCI System)
+  quality-assurance:
+    build:
+      context: ./aura_ai_system/services/quality_assurance_service
+      dockerfile: Dockerfile
+    container_name: aura-quality-ai
+    ports:
+      - "8008:8008"
+    networks:
+      - aura-network
+    volumes:
+      - ai_data:/app/data
+      - ai_logs:/app/logs
+    depends_on:
+      - image-processing
+      - nlu-service
+      - style-profile
+      - combination-engine
+      - recommendation-engine
+    restart: unless-stopped
+
+  # Multi-Modal Coordinator AI Service (CLIP + NLU Integration)
+  multi-modal-coordinator:
+    build:
+      context: ./aura_ai_system/services/multi_modal_coordinator
+      dockerfile: Dockerfile
+    container_name: aura-multimodal-ai
+    ports:
+      - "8009:8009"
+    networks:
+      - aura-network
+    volumes:
+      - ai_models:/app/models
+      - ai_data:/app/data
+      - ai_logs:/app/logs
+    depends_on:
+      - image-processing
+      - nlu-service
+      - style-profile
+      - combination-engine
+      - recommendation-engine
+      - quality-assurance
+    restart: unless-stopped
+    environment:
+      - CLIP_MODEL_PATH=/app/models/clip
+      - NLU_SERVICE_URL=http://nlu-service:8002
+      - IMAGE_PROCESSING_URL=http://image-processing:8001
+      - QUALITY_ASSURANCE_URL=http://quality-assurance:8008
 
 networks:
   aura-network:
